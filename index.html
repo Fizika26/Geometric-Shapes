@@ -1,0 +1,202 @@
+<!-- Day / Night kawaii-shapes widget for Notion. Single self-contained file. -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>День / Ночь</title>
+
+<style>
+  :root { --ui-font: ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, -apple-system, sans-serif; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; height:100%; overflow:hidden; background:transparent; -webkit-tap-highlight-color:transparent; }
+
+  #scene { position:fixed; inset:0; border-radius:18px; overflow:hidden; cursor:crosshair; isolation:isolate;
+           background:#fff; transition:background .8s ease; }
+  canvas { position:absolute; inset:0; width:100%; height:100%; display:block; }
+  #scene::after { content:""; position:absolute; inset:0; pointer-events:none; border-radius:18px;
+                  box-shadow: inset 0 0 0 1px var(--edge, rgba(0,0,0,.06)); transition: box-shadow .8s ease; }
+
+  .bar { position:absolute; top:14px; left:16px; right:16px; display:flex; align-items:center;
+         justify-content:space-between; z-index:3; pointer-events:none; }
+  .label { font-family:var(--ui-font); font-weight:800; letter-spacing:.16em; text-transform:uppercase;
+           font-size:12px; color:var(--label,#1a1a1a); transition:color .8s ease; user-select:none; }
+
+  .toggle { pointer-events:auto; position:relative; width:64px; height:30px; border:none; padding:0; margin:0;
+            border-radius:999px; cursor:pointer; background:var(--track,#ececec);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,.18); transition:background .8s ease; }
+  .toggle:focus-visible { outline:2px solid #4d8dff; outline-offset:3px; }
+  .knob { position:absolute; top:3px; left:3px; width:24px; height:24px; border-radius:50%;
+          background:var(--knob,#fff); box-shadow:0 2px 5px rgba(0,0,0,.3);
+          transition: transform .55s cubic-bezier(.5,1.4,.4,1), background .8s ease; display:grid; place-items:center; }
+  .toggle[aria-pressed="true"] .knob { transform:translateX(34px); }
+  .knob svg { width:16px; height:16px; display:block; }
+  .ray { stroke:#e8a13a; }
+  .disc { fill:#ffcf5c; transition:opacity .5s ease; }
+  .moon { fill:#3a3a4a; transition:opacity .5s ease; }
+
+  @media (prefers-reduced-motion: reduce) { .knob,.toggle,.label,.disc,.moon,#scene { transition-duration:.01ms; } }
+</style>
+
+<div id="scene">
+  <canvas id="c"></canvas>
+  <div class="bar">
+    <span class="label" id="modeLabel">День</span>
+    <button class="toggle" id="toggle" aria-pressed="false" aria-label="Переключить день и ночь" title="День / Ночь">
+      <span class="knob">
+        <svg viewBox="0 0 24 24">
+          <g id="sun">
+            <circle class="disc" cx="12" cy="12" r="5"/>
+            <g class="ray" stroke-width="2" stroke-linecap="round">
+              <line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/>
+              <line x1="1.5" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.5" y2="12"/>
+              <line x1="4.2" y1="4.2" x2="6" y2="6"/><line x1="18" y1="18" x2="19.8" y2="19.8"/>
+              <line x1="19.8" y1="4.2" x2="18" y2="6"/><line x1="6" y1="18" x2="4.2" y2="19.8"/>
+            </g>
+          </g>
+          <path class="moon" id="moon" d="M21 12.8A8 8 0 1 1 11.2 3 6.2 6.2 0 0 0 21 12.8z" opacity="0"/>
+        </svg>
+      </span>
+    </button>
+  </div>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const scene=document.getElementById("scene"), canvas=document.getElementById("c"), ctx=canvas.getContext("2d");
+  const toggle=document.getElementById("toggle"), label=document.getElementById("modeLabel"), root=document.documentElement;
+  const sunG=document.getElementById("sun"), moonP=document.getElementById("moon");
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const TAU=Math.PI*2, INK="#1f1f24";
+
+  /* bright flat palette from the reference sheet */
+  const COLORS=["#F9C200","#F6A6B2","#1A73E8","#15A94B","#F0231F"];
+  const KINDS=["square","circle","star","hexagon","triangle","wideRect","pentagon","trapezoid","ellipse"];
+
+  /* theme 0=day(white) 1=night(black) */
+  let theme=0, target=0;
+  const lerp=(a,b,t)=>a+(b-a)*t;
+
+  let W=0,H=0,dpr=1;
+  function resize(){
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=scene.clientWidth; H=scene.clientHeight;
+    canvas.width=W*dpr; canvas.height=H*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    buildShapes();
+  }
+
+  let shapes=[];
+  function pick(a){ return a[(Math.random()*a.length)|0]; }
+  function buildShapes(){
+    const count=Math.max(10, Math.min(22, Math.round((W*H)/16000)));
+    shapes=[];
+    for(let i=0;i<count;i++){
+      const depth=0.35+Math.random()*0.65;
+      const size=lerp(40,86,depth)*(0.8+Math.random()*0.35);
+      const kind=pick(KINDS);
+      shapes.push({
+        kind, size, depth,
+        color: pick(COLORS),
+        baseX:Math.random()*W, baseY:Math.random()*H, x:0,y:0,vx:0,vy:0,
+        phase:Math.random()*TAU, floatAmp:lerp(5,22,depth), floatSpd:0.0004+Math.random()*0.0006,
+        sq:0
+      });
+      const s=shapes[i]; s.x=s.baseX; s.y=s.baseY;
+    }
+    shapes.sort((a,b)=>a.depth-b.depth); // near shapes drawn last (on top)
+  }
+
+  /* ---------- shape bodies (centered at 0,0) ---------- */
+  function rrect(w,h,r){ const x=-w/2,y=-h/2; ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+  // rounded polygon from a list of {x,y} vertices
+  function roundedPoly(pts,r){ const n=pts.length; ctx.beginPath();
+    for(let i=0;i<n;i++){ const a=pts[i], b=pts[(i+1)%n], c=pts[(i+2)%n];
+      if(i===0) ctx.moveTo((a.x+b.x)/2,(a.y+b.y)/2);
+      ctx.arcTo(b.x,b.y,(b.x+c.x)/2,(b.y+c.y)/2,r); }
+    ctx.closePath(); }
+  function ngon(n,rad,rot){ const p=[]; for(let i=0;i<n;i++){ const a=rot+i*TAU/n; p.push({x:Math.cos(a)*rad,y:Math.sin(a)*rad}); } return p; }
+  function starPts(spikes,ro,ri){ const p=[]; for(let i=0;i<spikes*2;i++){ const r=i%2?ri:ro, a=-Math.PI/2+i*Math.PI/spikes; p.push({x:Math.cos(a)*r,y:Math.sin(a)*r}); } return p; }
+
+  function bodyPath(s){
+    const r=s.size/2, cr=s.size*0.16; // corner radius
+    switch(s.kind){
+      case "square":   rrect(s.size,s.size,s.size*0.22); break;
+      case "wideRect": rrect(s.size*1.5,s.size*0.92,s.size*0.2); break;
+      case "circle":   ctx.beginPath(); ctx.arc(0,0,r,0,TAU); break;
+      case "ellipse":  ctx.beginPath(); ctx.ellipse(0,0,r*1.15,r*0.82,0,0,TAU); break;
+      case "hexagon":  roundedPoly(ngon(6,r*1.08,0), cr); break;              // flat top/bottom
+      case "pentagon": roundedPoly(ngon(5,r*1.08,-Math.PI/2), cr); break;     // point up
+      case "triangle": roundedPoly([{x:0,y:-r*1.08},{x:r,y:r*0.72},{x:-r,y:r*0.72}], cr*1.2); break;
+      case "trapezoid":roundedPoly([{x:-r*0.55,y:-r*0.72},{x:r*0.55,y:-r*0.72},{x:r*1.02,y:r*0.72},{x:-r*1.02,y:r*0.72}], cr); break;
+      case "star":     roundedPoly(starPts(5,r*1.18,r*0.52), s.size*0.1); break;
+      default:         ctx.beginPath(); ctx.arc(0,0,r,0,TAU);
+    }
+  }
+
+  /* ---------- pointer ---------- */
+  const pointer={x:-9999,y:-9999,active:false};
+  function setPointer(e){ const t=e.touches?e.touches[0]:e, rect=scene.getBoundingClientRect();
+    pointer.x=t.clientX-rect.left; pointer.y=t.clientY-rect.top; pointer.active=true; }
+  scene.addEventListener("mousemove",setPointer);
+  scene.addEventListener("touchmove",e=>setPointer(e),{passive:true});
+  scene.addEventListener("mouseleave",()=>pointer.active=false);
+  scene.addEventListener("touchend",()=>pointer.active=false);
+  const REPEL_R=140, REPEL_F=4.6;
+
+  /* ---------- loop ---------- */
+  let t0=performance.now();
+  function frame(now){
+    const dt=Math.min(50,now-t0); t0=now;
+    theme+=(target-theme)*0.06; if(Math.abs(target-theme)<0.001) theme=target;
+
+    const bg=Math.round(lerp(255,8,theme));
+    ctx.fillStyle=`rgb(${bg},${bg},${Math.round(lerp(255,10,theme))})`;
+    ctx.fillRect(0,0,W,H);
+
+    for(const s of shapes){
+      s.phase+=s.floatSpd*dt*(reduce?0:1);
+      const homeX=s.baseX+Math.cos(s.phase)*s.floatAmp;
+      const homeY=s.baseY+Math.sin(s.phase*0.9)*s.floatAmp;
+      s.vx+=(homeX-s.x)*0.014; s.vy+=(homeY-s.y)*0.014;
+
+      if(pointer.active){
+        const dx=s.x-pointer.x, dy=s.y-pointer.y, d2=dx*dx+dy*dy;
+        if(d2<REPEL_R*REPEL_R){ const d=Math.sqrt(d2)||0.001, f=(1-d/REPEL_R)*REPEL_F*s.depth;
+          s.vx+=(dx/d)*f; s.vy+=(dy/d)*f; }
+      }
+      s.vx*=0.86; s.vy*=0.86; s.x+=s.vx; s.y+=s.vy;
+      // squash-and-stretch on speed for a little life
+      const spd=Math.hypot(s.vx,s.vy); s.sq+=(Math.min(spd*0.012,0.12)-s.sq)*0.2;
+
+      ctx.save();
+      ctx.translate(s.x,s.y);
+      ctx.scale(1+s.sq, 1-s.sq);
+      bodyPath(s); ctx.fillStyle=s.color; ctx.fill();
+      ctx.restore();
+    }
+
+    // chrome adapts to bg
+    root.style.setProperty("--label", theme>0.5?"#f2f2f7":"#1a1a1a");
+    root.style.setProperty("--edge", theme>0.5?"rgba(255,255,255,.08)":"rgba(0,0,0,.06)");
+    scene.style.background = `rgb(${bg},${bg},${Math.round(lerp(255,10,theme))})`;
+    requestAnimationFrame(frame);
+  }
+
+  /* ---------- toggle ---------- */
+  function setMode(night){
+    target=night?1:0;
+    toggle.setAttribute("aria-pressed",String(night));
+    label.textContent=night?"Ночь":"День";
+    root.style.setProperty("--track", night?"#2c2c34":"#ececec");
+    root.style.setProperty("--knob",  night?"#e9ebff":"#ffffff");
+    sunG.style.opacity=night?0:1; moonP.style.opacity=night?1:0;
+  }
+  toggle.addEventListener("click",()=>setMode(toggle.getAttribute("aria-pressed")!=="true"));
+
+  const startNight=(new Date().getHours()<7 || new Date().getHours()>=19);
+  resize(); theme=startNight?1:0; setMode(startNight);
+  window.addEventListener("resize",resize);
+  requestAnimationFrame(frame);
+})();
+</script>
