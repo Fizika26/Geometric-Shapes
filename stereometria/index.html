@@ -1,0 +1,1709 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Стереометрия с котиками</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Nunito:wght@400;600;700;800&family=Caveat:wght@600;700&display=swap">
+<style>
+/* Layout: pink striped wall with framed pictures as navigation, butter pinstripe wall, cream "sheets", gingham tablecloth floor with cats */
+:root{
+  --cream:#FBF6EA; --paper:#FFFDF6; --butter:#FCF1C2;
+  --pink:#F3C4E3; --pink-deep:#DE8BC0;
+  --blue:#4D68A8; --sky:#DCE5F5; --indigo:#4B54A3;
+  --ink:#1D1B1E; --ink-soft:#57525D;
+  --orange:#E3A04A; --ginger:#E39A4E; --ginger-dk:#B9692B; --greycat:#5D6378;
+  --ok:#2F7D4D; --ok-bg:#DFF0E3; --bad:#C0392E; --bad-bg:#F9E0DB;
+  --lav:#E5DDF6;
+  --room:#FCF1C2; --wall:#FBF6EA; --wall-stripe:#F3C4E3; --wall-ink:#1D1B1E;
+  --field-bg:#F4F7FD; --field-check:rgba(110,140,205,.16);
+  --floor-bg:#fff; --floor-check:rgba(110,140,205,.55); --line:var(--line);
+  --display:'Unbounded', 'Arial Black', system-ui, sans-serif;
+  --body:'Nunito', 'Segoe UI', system-ui, sans-serif;
+  --hand:'Caveat', 'Comic Sans MS', cursive;
+  color-scheme: light;
+}
+/* night: the room lights go off; paper stays readable like under a lamp */
+html[data-night]{
+  --room:#1F2244; --wall:#262A52; --wall-stripe:#323867; --wall-ink:#F2ECDF;
+  --paper:#EFE8D8; --cream:#E6DECB; --sky:#CAD4EE; --lav:#DAD1EE; --pink:#E9B3D6;
+  --field-bg:#252A50; --field-check:rgba(120,140,220,.2);
+  --floor-bg:#2A2F5A; --floor-check:rgba(120,140,220,.45);
+}
+html[data-night] body{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='400'%3E%3Cpath d='M32 0 Q27 100 32 200 T32 400' fill='none' stroke='%237F8DD6' stroke-width='1.6' opacity='.35'/%3E%3C/svg%3E")}
+html[data-night] .top{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='58' height='400'%3E%3Cpath d='M15 0 Q10 100 15 200 T15 400' fill='none' stroke='%23323867' stroke-width='25'/%3E%3C/svg%3E")}
+body,.top,.field,.floor{transition:background-color .5s}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{transition:none!important;animation:none!important}}
+body{
+  background-color:var(--room);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='400'%3E%3Cpath d='M32 0 Q27 100 32 200 T32 400' fill='none' stroke='%234D68A8' stroke-width='1.6' opacity='.55'/%3E%3C/svg%3E");
+  color:var(--ink); font-family:var(--body); font-size:16px; line-height:1.55;
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--wall)}
+.wrap{max-width:1000px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px))}
+
+/* ---------- cover ---------- */
+.top{
+  background-color:var(--wall);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='58' height='400'%3E%3Cpath d='M15 0 Q10 100 15 200 T15 400' fill='none' stroke='%23F3C4E3' stroke-width='25'/%3E%3C/svg%3E");
+  border-bottom:2.5px solid var(--ink);
+}
+.wall{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:end;gap:0 40px;padding-block:8px 0}
+.hang{position:relative;padding-top:112px;margin-bottom:30px;justify-self:start;max-width:100%}
+.hang::before{content:"";position:absolute;left:50%;top:58px;width:150px;height:56px;transform:translateX(-50%);
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 56'%3E%3Cpath d='M18 56 L75 8 L132 56' fill='none' stroke='%231D1B1E' stroke-width='2'/%3E%3Ccircle cx='75' cy='8' r='6' fill='%23E3A04A' stroke='%231D1B1E' stroke-width='2'/%3E%3C/svg%3E") no-repeat center/contain}
+html[data-night] .hang::before,html[data-night] .pic::before{filter:invert(.9) hue-rotate(180deg)}
+.frame{position:relative;background:var(--paper);border:10px solid var(--orange);outline:2px solid var(--ink);box-shadow:inset 0 0 0 2px var(--ink), 8px 10px 0 rgba(29,27,30,.18);padding:10px;transform:rotate(-1.6deg)}
+.frame .mat{border:1.5px solid var(--ink);padding:14px 22px 16px;background:var(--cream)}
+.eyebrow{font-family:var(--display);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--blue)}
+.frame h1{font-family:var(--display);font-weight:800;font-size:clamp(1.45rem,5.6vw,2.6rem);line-height:1.05;margin:.15em 0 .2em;letter-spacing:-.01em}
+.frame h1 + p{margin:0;font-family:var(--hand);font-size:1.4rem;line-height:1.1;color:var(--ink-soft)}
+
+/* gallery nav: four small framed pictures */
+.gallery{display:grid;grid-template-columns:repeat(3,124px);gap:4px 18px;justify-self:end;align-self:end;margin-bottom:26px}
+.pic{position:relative;display:block;padding-top:36px;text-decoration:none;color:var(--ink);transform-origin:50% 8px}
+.pic::before{content:"";position:absolute;left:50%;top:0;width:96px;height:38px;transform:translateX(-50%);
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 38'%3E%3Cpath d='M14 38 L48 6 L82 38' fill='none' stroke='%231D1B1E' stroke-width='1.8'/%3E%3Ccircle cx='48' cy='6' r='4.5' fill='%23E3A04A' stroke='%231D1B1E' stroke-width='1.8'/%3E%3C/svg%3E") no-repeat center/contain}
+.pic .pf{display:block;background:var(--paper);border:7px solid var(--ink);outline:1.5px solid var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink), 5px 7px 0 rgba(29,27,30,.16);padding:6px;transition:transform .2s}
+.pic .pm{display:flex;flex-direction:column;align-items:center;gap:2px;border:1.2px solid var(--ink);background:var(--cream);padding:8px 8px 6px;min-width:0;overflow:hidden}
+.pic svg{display:block;width:62px;height:42px}
+.pic .cap{font-family:var(--hand);font-weight:700;font-size:1.4rem;line-height:1;text-align:center;color:var(--ink);white-space:nowrap;letter-spacing:.01em}
+.pic:nth-child(1) .pf{transform:rotate(-2.2deg);border-color:var(--blue)}
+.pic:nth-child(2) .pf{transform:rotate(1.6deg);border-color:var(--pink-deep)}
+.pic:nth-child(3) .pf{transform:rotate(1.2deg);border-color:var(--orange)}
+.pic:nth-child(4) .pf{transform:rotate(-1.5deg);border-color:var(--greycat)}
+.pic:nth-child(5) .pf{transform:rotate(1.8deg);border-color:var(--ginger-dk)}
+.pic:nth-child(6) .pf{transform:rotate(-1.2deg);border-color:var(--ok)}
+.pic:hover .pf{transform:rotate(0deg) translateY(-2px)}
+.pic[aria-current="page"] .pm{background:var(--pink)}
+.pic[aria-current="page"] .cap{text-decoration:underline wavy var(--pink-deep) 1.5px;text-underline-offset:4px}
+.pic[aria-current="page"] .pf{border-color:var(--indigo);box-shadow:inset 0 0 0 1.5px var(--ink), 6px 8px 0 rgba(29,27,30,.28)}
+.pic.swing{animation:swing 1s ease-out}
+@keyframes swing{0%{transform:rotate(6deg)}30%{transform:rotate(-4deg)}55%{transform:rotate(2deg)}80%{transform:rotate(-.6deg)}100%{transform:rotate(0)}}
+svg .ic{fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+svg .icf{fill:var(--sky);stroke:var(--ink);stroke-width:2;stroke-linejoin:round}
+svg .ica{fill:none;stroke:var(--orange);stroke-width:2.4;stroke-linecap:round}
+
+.hero-cat{position:absolute;right:7%;top:14px;z-index:2;width:106px}
+.hero-cat svg{display:block;width:100%;height:auto}
+.hero-cat .e-happy,.hero-cat .e-sleep{display:none}
+.hero-cat.happy .e-open{display:none} .hero-cat.happy .e-happy{display:inline}
+html[data-night] .hero-cat .e-open,html[data-night] .hero-cat .e-happy{display:none}
+html[data-night] .hero-cat .e-sleep{display:inline}
+.yarns{display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap}
+.yarns .yl{font-family:var(--hand);font-size:1.15rem;color:var(--ink-soft);margin-right:4px}
+.yb{width:24px;height:24px;border-radius:50%;border:2px solid var(--ink);padding:0;cursor:pointer;
+  background:conic-gradient(var(--pink-deep) calc(var(--p,0)*1%), var(--paper) 0);position:relative;transition:transform .15s}
+.yb::after{content:"";position:absolute;inset:3px;border-radius:50%;border:1.5px solid rgba(255,255,255,.75);border-left-color:transparent;border-bottom-color:transparent}
+.yb:hover{transform:scale(1.15)}
+.yb.full{box-shadow:0 0 0 3px var(--butter)}
+.stars{position:absolute;inset:0;pointer-events:none}
+.stars svg{position:absolute;width:22px;height:22px;fill:var(--indigo);transition:opacity .5s, fill .5s}
+.stars svg.n{opacity:0}
+html[data-night] .stars svg{fill:#F6DE7A;opacity:1;animation:twinkle 2.4s ease-in-out infinite alternate}
+html[data-night] .stars svg:nth-child(2n){animation-delay:-1.1s}
+html[data-night] .stars svg:nth-child(3n){animation-delay:-.5s;animation-duration:3.1s}
+@keyframes twinkle{from{opacity:.25;scale:.7}to{opacity:1;scale:1.1}}
+.switches{position:absolute;left:max(16px, env(safe-area-inset-left,0px));top:12px;z-index:3;display:flex;gap:12px;align-items:flex-start}
+.switch,.radio{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;padding:0;cursor:pointer;color:var(--wall-ink)}
+.sw-cap{font-family:var(--hand);font-weight:700;font-size:1.05rem;line-height:1}
+.plate{position:relative;width:34px;height:46px;border:2px solid var(--ink);border-radius:7px;background:var(--paper);box-shadow:2px 3px 0 rgba(29,27,30,.2)}
+.plate::before,.plate::after{content:"";position:absolute;left:50%;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:var(--ink)}
+.plate::before{top:3px} .plate::after{bottom:3px}
+.lever{position:absolute;left:50%;top:12px;width:12px;height:22px;margin-left:-6px;border:2px solid var(--ink);border-radius:4px;background:linear-gradient(var(--orange) 50%, var(--paper) 50%);transition:background .2s}
+.switch[aria-checked="true"] .lever{background:linear-gradient(var(--paper) 50%, var(--indigo) 50%)}
+.radio .rb{width:46px;height:46px;border:2px solid var(--ink);border-radius:12px;background:var(--pink);display:grid;place-items:center;box-shadow:2px 3px 0 rgba(29,27,30,.2)}
+.radio svg{width:28px;height:28px}
+.radio .wave{opacity:0;transition:opacity .2s}
+.radio[aria-pressed="true"] .wave{opacity:1}
+.radio[aria-pressed="true"] .mute{opacity:0}
+.totop{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;width:56px;height:56px;border-radius:50%;border:2.5px solid var(--ink);background:var(--pink);box-shadow:3px 3px 0 var(--ink);display:grid;place-items:center;cursor:pointer;opacity:0;transform:translateY(20px) scale(.8);pointer-events:none;transition:opacity .25s, transform .25s}
+.totop.show{opacity:1;transform:none;pointer-events:auto}
+.totop svg{width:30px;height:30px}
+@media (max-width:860px){
+  .wall{grid-template-columns:minmax(0,1fr)}
+  .hang{justify-self:center;margin-bottom:8px;padding-top:118px}
+  .hang::before{top:64px}
+  .hero-cat{width:96px;top:24px;right:4%}
+  .gallery{justify-self:stretch;gap:2px 12px;grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:22px}
+  .pic .pf{border-width:6px;padding:4px}
+  .pic .pm{padding:6px 4px 5px}
+  .pic .cap{font-size:clamp(1rem,4.4vw,1.3rem)}
+}
+@media (max-width:380px){
+  .pic svg{width:50px;height:34px}
+}
+:focus-visible{outline:3px solid var(--indigo);outline-offset:2px}
+
+main .wrap{padding-block:28px 48px}
+.view-head{margin-bottom:22px;max-width:62ch}
+.view-head h2{font-family:var(--display);font-weight:800;font-size:clamp(1.3rem,4.5vw,2rem);margin:0 0 .3em;text-wrap:balance}
+.view-head p{margin:0;color:var(--ink-soft)}
+.hand{font-family:var(--hand);font-size:1.35em;color:var(--blue);line-height:1}
+
+/* ---------- konspekt ---------- */
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 26px}
+.chip{font-family:var(--body);font-weight:800;font-size:.9rem;background:var(--paper);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;color:var(--ink)}
+.chip b{font-family:var(--display);font-size:.72rem;color:var(--blue);margin-right:6px}
+.chip:hover{background:var(--pink)}
+.sheets{display:grid;gap:30px}
+.sheet{background:var(--paper);border:2.5px solid var(--ink);border-radius:6px;overflow:hidden;scroll-margin-top:90px}
+.sheet::before{content:"";display:block;height:14px;border-bottom:2px solid var(--ink);
+  background-color:#fff;
+  background-image:linear-gradient(90deg,rgba(110,140,205,.55) 50%,transparent 50%),linear-gradient(rgba(110,140,205,.55) 50%,transparent 50%);
+  background-size:22px 22px}
+.sheet-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;padding:18px 22px 6px}
+.sheet-head .num{font-family:var(--display);font-weight:800;font-size:.85rem;background:var(--pink);border:2px solid var(--ink);border-radius:6px;padding:2px 8px}
+.sheet-head h3{font-family:var(--display);font-weight:700;font-size:clamp(1rem,3.4vw,1.35rem);margin:0;flex:1 1 260px;text-wrap:balance;line-height:1.25}
+.sheet-head .pg{font-family:var(--hand);font-size:1.3rem;color:var(--ink-soft)}
+.sub{font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);margin:22px 22px 0;padding-top:4px}
+.items{padding:4px 22px 18px}
+.item{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:8px 22px;padding:16px 0;border-top:1.5px dashed var(--line);align-items:center}
+.items>.item:first-child{border-top:0}
+.item.solo{grid-template-columns:minmax(0,1fr)}
+.item p{margin:6px 0 0;max-width:62ch}
+.item p em{font-style:normal;background:linear-gradient(transparent 58%, var(--pink) 58%);padding:0 2px}
+.tag{display:inline-block;font-family:var(--display);font-weight:700;font-size:.62rem;letter-spacing:.07em;text-transform:uppercase;border:1.5px solid var(--ink);border-radius:999px;padding:3px 10px}
+.t-ax{background:var(--pink)} .t-cor{background:var(--paper);border-style:dashed}
+.t-def{background:var(--sky)} .t-sign{background:var(--butter)}
+.t-prop{background:var(--lav)} .t-thm{background:var(--ink);color:var(--cream)}
+.fig{margin:0}
+.fig svg{display:block;width:100%;max-width:300px;height:auto;margin-left:auto}
+.fig figcaption{font-family:var(--hand);font-size:1.15rem;color:var(--ink-soft);text-align:right;line-height:1.1}
+.cases{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:10px}
+.case{border:1.5px solid var(--ink);border-radius:8px;padding:10px;background:var(--cream)}
+.case svg{display:block;width:100%;height:auto}
+.case p{margin:4px 0 0;font-size:.92rem}
+.gloss{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+.gloss div{background:var(--cream);border:1.5px solid var(--ink);border-radius:8px;padding:10px 12px}
+.gloss dt{font-weight:800}
+.gloss dd{margin:2px 0 0;font-size:.93rem;color:var(--ink-soft)}
+@media (max-width:640px){
+  .item{grid-template-columns:minmax(0,1fr)}
+  .fig svg{margin:0 auto;max-width:280px}
+  .fig figcaption{text-align:center}
+  .cases{grid-template-columns:minmax(0,1fr)}
+  .case{display:grid;grid-template-columns:120px minmax(0,1fr);gap:10px;align-items:center}
+  .gloss{grid-template-columns:minmax(0,1fr)}
+  .sheet-head,.items{padding-left:16px;padding-right:16px}
+  .sub{margin-left:16px;margin-right:16px}
+}
+/* svg drawing styles */
+svg .pl{fill:var(--sky);stroke:var(--ink);stroke-width:1.8;stroke-linejoin:round}
+svg .pl2{fill:var(--pink);fill-opacity:.75;stroke:var(--ink);stroke-width:1.8;stroke-linejoin:round}
+svg .ln{stroke:var(--ink);stroke-width:2.4;fill:none;stroke-linecap:round}
+svg .thin{stroke-width:1.6}
+svg .ac{stroke:var(--orange);stroke-width:3}
+svg .ds{stroke-dasharray:6 5}
+svg .pt{fill:var(--ink)}
+svg .lb{font-family:var(--hand);font-size:22px;font-weight:700;fill:var(--ink)}
+svg .lbg{font-family:var(--hand);font-size:24px;font-weight:700;fill:var(--indigo)}
+svg .lbo{font-family:var(--hand);font-size:22px;font-weight:700;fill:var(--ginger-dk)}
+
+/* ---------- buttons ---------- */
+.btn{font-family:var(--display);font-weight:700;font-size:.74rem;color:var(--ink);background:var(--paper);border:2px solid var(--ink);border-radius:10px;padding:11px 14px;box-shadow:3px 3px 0 var(--ink);cursor:pointer;transition:transform .08s, box-shadow .08s}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn.primary{background:var(--pink)}
+.btn.dark{background:var(--ink);color:var(--cream)}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:10px}
+
+/* ---------- drag game ---------- */
+.game-top{display:flex;align-items:center;gap:16px;margin-bottom:12px}
+.game-top .gp{flex:1;min-width:0}
+.game-top .gp-count{font-family:var(--display);font-weight:700;font-size:.8rem;font-variant-numeric:tabular-nums;display:block;margin-bottom:6px}
+.game-top .progress{margin:0}
+.field{position:relative;user-select:none;-webkit-user-select:none;height:clamp(470px,66vh,560px);border:2.5px solid var(--ink);border-radius:12px;overflow:hidden;
+  background-color:var(--field-bg);background-image:linear-gradient(90deg,var(--field-check) 50%,transparent 50%),linear-gradient(var(--field-check) 50%,transparent 50%);background-size:34px 34px}
+.sent{position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%);width:min(450px,48%);background:var(--paper);border:2.5px solid var(--ink);border-radius:10px;box-shadow:5px 5px 0 var(--ink);padding:18px 20px 12px;font-size:1.1rem;line-height:2.15;transition:background .3s}
+.sent.done{background:#F3FAF4}
+.sent-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1.5px dashed var(--line);margin-top:8px;padding-top:6px;line-height:1.2}
+.sent-foot svg{width:48px;height:auto;flex:none}
+.sent-msg{font-family:var(--hand);font-size:1.3rem;color:var(--ink-soft)}
+.sent.done .sent-msg{color:var(--ok)}
+@media (max-width:900px){
+  .sent{left:10px;right:10px;top:10px;width:auto;transform:none;padding:14px 14px 10px;font-size:1.02rem}
+}
+.slot{display:inline-block;min-height:1.5em;vertical-align:baseline;border-bottom:2.5px dashed var(--ink);background:var(--butter);border-radius:6px 6px 0 0;padding:0 8px;margin:0 3px;font-family:var(--hand);font-weight:700;font-size:1.3em;line-height:1.25;color:var(--blue);text-align:center;transition:background .15s}
+.slot.over{background:var(--pink)}
+.slot.filled{border-bottom-style:solid;border-color:var(--ok);background:var(--ok-bg);color:var(--ok)}
+.slot.shown{border-bottom-style:solid;border-color:var(--bad);background:var(--bad-bg);color:var(--bad)}
+.slot.wrong{background:var(--bad-bg);animation:shake .4s}
+@keyframes shake{20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+.fly{position:absolute;left:0;top:0;z-index:3;font-family:var(--hand);font-weight:700;font-size:1.45rem;line-height:1;white-space:nowrap;color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:5px 15px 7px;box-shadow:3px 3px 0 var(--ink);touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;will-change:transform}
+.fly:nth-child(4n+1){background:var(--pink)} .fly:nth-child(4n+2){background:var(--butter)}
+.fly:nth-child(4n+3){background:var(--sky)} .fly:nth-child(4n){background:var(--lav)}
+.fly.dragging{cursor:grabbing;z-index:6;box-shadow:6px 8px 0 rgba(29,27,30,.35)}
+.fly.glow{outline:3px solid var(--indigo);outline-offset:3px}
+.fly.pop{transition:opacity .25s, scale .25s;opacity:0;scale:1.4}
+@media (max-width:700px){.fly{font-size:1.3rem;padding:4px 13px 6px}}
+.game-btns{margin-top:14px}
+.pet{position:absolute;left:0;top:0;z-index:1;pointer-events:none;will-change:transform}
+.kitty{transform-origin:41px 63px}
+.petlayer{position:absolute;left:0;right:0;top:-34px;height:130px;pointer-events:none;z-index:1}
+.kitty svg{display:block;width:84px;height:auto;overflow:visible}
+.kitty .leg{transform-box:fill-box;transform-origin:50% 8%}
+.kitty.run .la{animation:legA .2s ease-in-out infinite alternate}
+.kitty.run .lb{animation:legA .2s ease-in-out infinite alternate-reverse}
+.kitty .tail{transform-box:fill-box;transform-origin:100% 100%;animation:tail .7s ease-in-out infinite alternate}
+.kitty.run .tail{animation-duration:.3s}
+.kitty .ear{transform-box:fill-box;transform-origin:50% 100%}
+.kitty.run .ear{animation:ear .2s ease-in-out infinite alternate}
+@keyframes legA{from{transform:rotate(38deg)}to{transform:rotate(-38deg)}}
+@keyframes tail{from{transform:rotate(-12deg)}to{transform:rotate(14deg)}}
+@keyframes ear{from{transform:rotate(-6deg)}to{transform:rotate(6deg)}}
+.yarn{transform-origin:16px 16px}
+.yarn svg{display:block;width:32px;height:32px}
+.shadow{position:absolute;left:0;top:0;z-index:1;pointer-events:none;border-radius:50%;background:rgba(29,27,30,.16)}
+.thread{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.thread polyline{fill:none;stroke:var(--pink-deep);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+.puff{position:absolute;left:0;top:0;z-index:1;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:#fff;border:2px solid var(--ink);pointer-events:none;animation:puff .55s ease-out forwards}
+@keyframes puff{from{scale:.4;opacity:.9}to{scale:1.5;opacity:0}}
+.bam{position:absolute;left:0;top:0;z-index:5;width:96px;height:72px;margin:-36px 0 0 -48px;pointer-events:none;animation:bam .8s cubic-bezier(.2,1.6,.4,1) forwards}
+.bam svg{width:100%;height:100%;overflow:visible}
+.bam text{font-family:var(--display);font-weight:800;font-size:17px;fill:var(--ink);text-anchor:middle;dominant-baseline:middle}
+@keyframes bam{0%{scale:0;rotate:-20deg;opacity:1}35%{scale:1.15;rotate:6deg}60%{scale:1;rotate:-4deg;opacity:1}100%{scale:1.05;rotate:0deg;opacity:0}}
+.fly.boing{animation:boing .5s ease-out}
+@keyframes boing{0%{scale:1}25%{scale:1.22 .8}50%{scale:.88 1.12}75%{scale:1.06 .95}100%{scale:1}}
+.finish{text-align:center;line-height:1.4;padding:6px 0}
+.finish svg{width:110px;height:auto;display:block;margin:0 auto 6px}
+.finish strong{font-family:var(--display);font-size:1.2rem;display:block;margin-bottom:4px}
+
+
+/* ---------- shared: segmented modes, text on the wall ---------- */
+.game-top,.fc-meta{color:var(--wall-ink)}
+.game-top .hand,.fc-meta .hand{color:var(--wall-ink);opacity:.85}
+.modes{display:inline-flex;border:2px solid var(--ink);border-radius:12px;overflow:hidden;background:var(--paper);margin-bottom:14px;box-shadow:3px 3px 0 var(--ink);max-width:100%}
+.seg{font-family:var(--display);font-weight:700;font-size:.72rem;padding:10px 14px;border:0;background:none;color:var(--ink);cursor:pointer}
+.seg+.seg{border-left:2px solid var(--ink)}
+.seg[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.timer{font-family:var(--display);font-weight:800;font-size:1.05rem;font-variant-numeric:tabular-nums;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:10px;padding:4px 10px}
+.timer.low{background:var(--bad-bg);color:var(--bad)}
+
+/* ---------- 3D models ---------- */
+.m3{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:760px){.m3{grid-template-columns:minmax(0,1fr)}}
+.m3-card{background:var(--paper);border:2.5px solid var(--ink);border-radius:10px;overflow:hidden;box-shadow:5px 5px 0 var(--ink)}
+.m3-card::before{content:"";display:block;height:12px;border-bottom:2px solid var(--ink);background-color:#fff;background-image:linear-gradient(90deg,rgba(110,140,205,.55) 50%,transparent 50%),linear-gradient(rgba(110,140,205,.55) 50%,transparent 50%);background-size:20px 20px}
+#m3{display:block;width:100%;height:auto;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+#m3.dragging{cursor:grabbing}
+.m3-tip{margin:0;padding:4px 14px 10px;text-align:center;font-size:1.25rem;color:var(--ink-soft)}
+#m3 .face{fill:var(--sky);fill-opacity:.35;stroke:none}
+#m3 .hplane{fill:var(--pink);fill-opacity:.55;stroke:var(--pink-deep);stroke-width:1.5}
+#m3 .hplane.b{fill:var(--butter);fill-opacity:.7;stroke:var(--orange)}
+#m3 .edge{stroke:var(--ink);stroke-width:2.6;stroke-linecap:round}
+#m3 .edge.hid{stroke-dasharray:6 6;stroke-width:1.8;opacity:.75}
+#m3 .hl{stroke-width:5;stroke-linecap:round}
+#m3 .hl.c1{stroke:var(--orange)} #m3 .hl.c2{stroke:var(--pink-deep)} #m3 .hl.c3{stroke:var(--indigo)} #m3 .hl.c4{stroke:var(--ok)}
+#m3 .hl.hid{stroke-dasharray:7 6}
+#m3 .hit{stroke:transparent;stroke-width:20;stroke-linecap:round;cursor:pointer}
+#m3 .pick{stroke-width:6;stroke-linecap:round}
+#m3 .pick.ok{stroke:var(--ok)} #m3 .pick.bad{stroke:var(--bad)} #m3 .pick.ans{stroke:var(--ok);stroke-dasharray:3 7;stroke-width:5}
+#m3 .vx{fill:var(--ink)}
+#m3 .vl{font-family:var(--hand);font-weight:700;font-size:21px;fill:var(--ink);text-anchor:middle;dominant-baseline:middle;paint-order:stroke;stroke:var(--paper);stroke-width:4px}
+#m3 .vl.x{fill:var(--indigo)}
+.m3-panel{display:grid;gap:12px;min-width:0}
+.m3-panel .modes{margin:0;justify-self:start}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.presets{display:grid;gap:8px}
+.preset{display:flex;gap:10px;align-items:center;text-align:left;font:inherit;font-weight:700;color:var(--ink);background:var(--paper);border:2px solid var(--ink);border-radius:10px;padding:9px 12px;cursor:pointer}
+.preset .tag{flex:none}
+.preset[aria-pressed="true"]{background:var(--pink);box-shadow:3px 3px 0 var(--ink)}
+.m3-explain,.m3-q{background:var(--paper);border:2.5px solid var(--ink);border-radius:10px;padding:14px 16px}
+.m3-explain p,.m3-q p{margin:0}
+.m3-explain p+p{margin-top:6px}
+.m3-q .ask{font-family:var(--display);font-weight:700;font-size:1rem;line-height:1.35}
+.m3-fb{font-family:var(--hand);font-size:1.4rem;line-height:1.15;min-height:1.4em;color:var(--wall-ink)}
+.m3-fb.ok{color:var(--ok)} .m3-fb.bad{color:var(--bad)}
+html[data-night] .m3-fb.ok{color:#7FD39C} html[data-night] .m3-fb.bad{color:#FF9A8F}
+
+/* ---------- true / false ---------- */
+.tf-stage{position:relative;max-width:520px;margin:0 auto;height:300px;perspective:1200px}
+.tf-card{position:absolute;inset:0;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab;transition:transform .35s cubic-bezier(.3,.7,.3,1.2), opacity .3s}
+.tf-card.dragging{transition:none;cursor:grabbing}
+.tf-card .tf-in{position:absolute;inset:0;border:2.5px solid var(--ink);border-radius:16px;box-shadow:6px 6px 0 var(--ink);padding:22px;display:flex;flex-direction:column;justify-content:center;gap:12px;overflow:auto;background-color:var(--paper)}
+.tf-card .tf-in::before{content:"";position:absolute;inset:0 0 auto;height:14px;border-bottom:2px solid var(--ink);border-radius:13px 13px 0 0;background-color:var(--cream);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='14'%3E%3Crect width='15' height='14' fill='%23F3C4E3'/%3E%3C/svg%3E")}
+.tf-q{font-family:var(--display);font-weight:700;font-size:clamp(1.02rem,3.8vw,1.25rem);line-height:1.35;margin:0;text-wrap:balance}
+.tf-n{font-family:var(--hand);font-size:1.2rem;color:var(--ink-soft)}
+.tf-lean{position:absolute;top:22px;font-family:var(--display);font-weight:800;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border:2px solid currentColor;border-radius:8px;opacity:0}
+.tf-lean.no{left:18px;color:var(--bad);rotate:-8deg} .tf-lean.yes{right:18px;color:var(--ok);rotate:8deg}
+.tf-under{position:absolute;inset:10px 14px -10px;border:2.5px solid var(--ink);border-radius:16px;background:var(--cream);rotate:2.5deg}
+.tf-btns{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:520px;margin:22px auto 0}
+.tf-btns .btn{font-size:.85rem;padding:14px}
+.btn.no{background:var(--bad-bg)} .btn.yes{background:var(--ok-bg)}
+.tf-res{max-width:520px;margin:18px auto 0;background:var(--paper);border:2.5px solid var(--ink);border-radius:12px;padding:14px 16px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;align-items:center}
+.tf-res svg{width:64px;height:auto;grid-row:span 3}
+.tf-res strong{font-family:var(--display);font-size:1rem}
+.tf-res.ok strong{color:var(--ok)} .tf-res.bad strong{color:var(--bad)}
+.tf-res p{margin:0}
+.tf-res .btn{justify-self:start;margin-top:6px}
+
+/* ---------- flashcards ---------- */
+.fc-zone{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:24px;align-items:start}
+@media (max-width:720px){.fc-zone{grid-template-columns:minmax(0,1fr)}}
+.fc-stage{max-width:520px;width:100%;margin:0 auto}
+.fc-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-weight:800}
+.fc-meta .count{font-family:var(--display);font-size:.85rem;font-variant-numeric:tabular-nums}
+.progress{height:10px;border:2px solid var(--ink);border-radius:99px;background:var(--paper);overflow:hidden;margin-bottom:14px}
+.progress i{display:block;height:100%;background:var(--pink-deep);width:0;transition:width .3s}
+.fc{display:block;width:100%;height:340px;perspective:1200px;background:none;border:0;padding:0;cursor:pointer;font:inherit;color:inherit;text-align:left}
+.fc-inner{position:relative;width:100%;height:100%;transition:transform .55s cubic-bezier(.3,.7,.3,1.2);transform-style:preserve-3d}
+.fc.flipped .fc-inner{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:2.5px solid var(--ink);border-radius:14px;box-shadow:6px 6px 0 var(--ink);padding:20px;display:flex}
+.fc-face.front{background-color:var(--cream);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='400'%3E%3Cpath d='M12 0 Q8 100 12 200 T12 400' fill='none' stroke='%23F3C4E3' stroke-width='19'/%3E%3C/svg%3E")}
+.fc-face.back{transform:rotateY(180deg);background-color:#fff;background-image:linear-gradient(90deg,rgba(110,140,205,.5) 50%,transparent 50%),linear-gradient(rgba(110,140,205,.5) 50%,transparent 50%);background-size:30px 30px}
+.panel{background:var(--paper);border:2px solid var(--ink);border-radius:8px;padding:16px 18px;margin:auto 0;width:100%;max-height:100%;overflow:auto;display:flex;flex-direction:column;gap:8px}
+.fc-q{font-family:var(--display);font-weight:700;font-size:clamp(1rem,4vw,1.25rem);line-height:1.3;margin:0;text-wrap:balance}
+.fc-a{margin:0;font-size:1.05rem;line-height:1.5}
+.fc-hint{font-family:var(--hand);font-size:1.2rem;color:var(--ink-soft)}
+.fc-nav{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.fc-nav .btn{width:100%}
+.btn.know{background:var(--ok-bg)} .btn.again{background:var(--bad-bg)}
+.fc-side{background:var(--paper);border:2.5px solid var(--ink);border-radius:8px;padding:14px;display:grid;gap:12px}
+.fc-side h3{font-family:var(--display);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;margin:0;color:var(--blue)}
+.stat{display:flex;justify-content:space-between;font-weight:800;font-variant-numeric:tabular-nums}
+.fc-side .btn{width:100%}
+.fc-side svg{width:110px;height:auto;margin:0 auto;display:block}
+.done-msg{font-family:var(--hand);font-size:1.4rem;text-align:center;line-height:1.1}
+
+/* ---------- tasks ---------- */
+.task-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.task-tabs .chip[aria-pressed="true"]{background:var(--ink);color:var(--cream)}
+.task-tabs .chip[aria-pressed="true"] b{color:var(--pink)}
+.task-tabs .chip{display:inline-flex;align-items:center;gap:6px}
+.chip .lv{font-family:var(--hand);font-size:1.05rem;font-weight:700;color:var(--blue);line-height:1}
+.chip[aria-pressed="true"] .lv{color:var(--pink)}
+.chip .ck{color:var(--ok);font-weight:900}
+.chip[aria-pressed="true"] .ck{color:#9BE0B1}
+.task-tabs::-webkit-scrollbar{height:6px}
+@media (max-width:640px){.task-tabs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:8px;margin-left:-4px;padding-left:4px;scroll-snap-type:x proximity}.task-tabs .chip{flex:none;scroll-snap-align:start}}
+.hintbox{background:var(--butter);border:2px dashed var(--ink);border-radius:8px;padding:10px 14px;margin:0 0 12px;color:var(--ink)}
+.task{background:var(--paper);border:2.5px solid var(--ink);border-radius:8px;overflow:hidden}
+.task-top{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:16px 24px;padding:20px 22px}
+@media (max-width:680px){.task-top{grid-template-columns:minmax(0,1fr);padding:16px}}
+.task-top p.cond{margin:0 0 14px;font-size:1.05rem;max-width:62ch}
+.dano{display:grid;grid-template-columns:auto minmax(0,1fr);border:2px solid var(--ink);border-radius:6px;background:var(--cream);font-variant-numeric:tabular-nums}
+.dano div{padding:10px 14px}
+.dano .l{border-right:2px solid var(--ink);display:grid;gap:2px;font-weight:700}
+.dano .l b,.dano .r b{font-family:var(--hand);font-size:1.3rem;color:var(--blue);font-weight:700}
+.dano .r{display:flex;flex-direction:column;justify-content:flex-start}
+.task .fig svg{max-width:300px;margin:0 auto}
+.steps{border-top:2px solid var(--ink);padding:18px 22px;background:var(--cream)}
+@media (max-width:680px){.steps{padding:16px}}
+.steps h4{font-family:var(--display);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;margin:0 0 12px;color:var(--blue)}
+.steps ol{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:10px}
+.steps li{display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;align-items:start;animation:pop .35s ease-out}
+.steps li .k{width:34px;height:34px;border-radius:50%;border:2px solid var(--ink);background:var(--pink);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:.8rem}
+.steps li p{margin:4px 0 0}
+.steps li .why{display:block;font-family:var(--hand);font-size:1.2rem;color:var(--blue);line-height:1.15;margin-top:2px}
+@keyframes pop{from{transform:translateY(6px);opacity:.3}to{transform:none;opacity:1}}
+.answer{display:flex;flex-wrap:wrap;align-items:center;gap:10px;border-top:2px dashed var(--line);padding-top:14px;margin-top:6px}
+.answer label{font-weight:800}
+.answer input{font:inherit;font-size:16px;font-weight:800;width:110px;padding:9px 12px;border:2px solid var(--ink);border-radius:8px;background:var(--paper);color:var(--ink)}
+.verdict{font-family:var(--hand);font-size:1.4rem;line-height:1.1}
+.verdict.ok{color:var(--ok)} .verdict.bad{color:var(--bad)}
+
+/* ---------- footer ---------- */
+.floor{position:relative;border-top:2.5px solid var(--ink);background-color:var(--floor-bg);background-image:linear-gradient(90deg,var(--floor-check) 50%,transparent 50%),linear-gradient(var(--floor-check) 50%,transparent 50%);background-size:40px 40px;margin-top:70px;min-height:120px}
+.floor .wrap{position:relative;padding-block:28px calc(28px + env(safe-area-inset-bottom,0px))}
+.floor-cats{position:absolute;right:max(16px, env(safe-area-inset-right,0px));top:-62px;display:flex;align-items:flex-end;gap:6px}
+.floor-cats svg{display:block;height:auto}
+
+</style>
+<style>[hidden]{display:none!important}img{max-width:100%}body{margin:0}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap wall">
+    <div class="stars" aria-hidden="true"><svg viewBox="-1 -1 2 2" style="left:46%;top:18%"><path d="M0 -1 Q.12 -.12 1 0 Q.12 .12 0 1 Q-.12 .12 -1 0 Q-.12 -.12 0 -1Z"/></svg><svg viewBox="-1 -1 2 2" style="left:94%;top:62%"><path d="M0 -1 Q.12 -.12 1 0 Q.12 .12 0 1 Q-.12 .12 -1 0 Q-.12 -.12 0 -1Z"/></svg><svg viewBox="-1 -1 2 2" style="left:30%;top:8%" class="n"><path d="M0 -1 Q.12 -.12 1 0 Q.12 .12 0 1 Q-.12 .12 -1 0 Q-.12 -.12 0 -1Z"/></svg><svg viewBox="-1 -1 2 2" style="left:62%;top:4%" class="n"><path d="M0 -1 Q.12 -.12 1 0 Q.12 .12 0 1 Q-.12 .12 -1 0 Q-.12 -.12 0 -1Z"/></svg><svg viewBox="-1 -1 2 2" style="left:84%;top:10%" class="n"><path d="M0 -1 Q.12 -.12 1 0 Q.12 .12 0 1 Q-.12 .12 -1 0 Q-.12 -.12 0 -1Z"/></svg><svg viewBox="-1 -1 2 2" style="left:4%;top:70%" class="n"><path d="M0 -1 Q.12 -.12 1 0 Q.12 .12 0 1 Q-.12 .12 -1 0 Q-.12 -.12 0 -1Z"/></svg><svg viewBox="-1 -1 2 2" style="left:52%;top:86%" class="n"><path d="M0 -1 Q.12 -.12 1 0 Q.12 .12 0 1 Q-.12 .12 -1 0 Q-.12 -.12 0 -1Z"/></svg></div>
+    <div class="switches">
+      <button class="switch" id="night-btn" role="switch" aria-checked="false" aria-label="Ночь: выключить свет"><span class="plate"><span class="lever"></span></span><span class="sw-cap">свет</span></button>
+      <button class="radio" id="sound-btn" aria-pressed="false" aria-label="Звук"><span class="rb"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M4 11 L9 11 L15 5 L15 23 L9 17 L4 17Z" fill="#FFFDF6" stroke="#1D1B1E" stroke-width="2" stroke-linejoin="round"/><path class="wave" d="M18.5 10 Q21.5 14 18.5 18 M21.5 7 Q26.5 14 21.5 21" fill="none" stroke="#1D1B1E" stroke-width="2" stroke-linecap="round"/><path class="mute" d="M19 10 L25 18 M25 10 L19 18" stroke="#1D1B1E" stroke-width="2" stroke-linecap="round"/></svg></span><span class="sw-cap">звук</span></button>
+    </div>
+    <div class="hang">
+      <div class="hero-cat" id="hero-cat">
+      <svg viewBox="0 0 220 236" role="img" aria-label="Чёрный кот держит каркасный куб">
+        <path d="M160 226 C204 224 214 182 196 160" stroke="#121014" stroke-width="17" fill="none" stroke-linecap="round"/>
+        <path d="M160 226 C204 224 214 182 196 160" stroke="#2B2833" stroke-width="10" fill="none" stroke-linecap="round"/>
+        <path d="M56 236 C50 188 70 150 110 148 C150 150 170 188 164 236Z" fill="#2B2833" stroke="#121014" stroke-width="3"/>
+        <ellipse cx="110" cy="176" rx="26" ry="18" fill="#3A3645"/>
+        <path d="M52 68 L44 10 L96 42Z" fill="#2B2833" stroke="#121014" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M168 68 L176 10 L124 42Z" fill="#2B2833" stroke="#121014" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M57 56 L53 24 L83 43Z" fill="#F3C4E3"/><path d="M163 56 L167 24 L137 43Z" fill="#F3C4E3"/>
+        <ellipse cx="110" cy="88" rx="68" ry="57" fill="#2B2833" stroke="#121014" stroke-width="3"/>
+        <g class="e-open">
+        <ellipse cx="83" cy="84" rx="17" ry="20" fill="#F2D36B" stroke="#121014" stroke-width="2.6"/>
+        <ellipse cx="137" cy="84" rx="17" ry="20" fill="#F2D36B" stroke="#121014" stroke-width="2.6"/>
+        <ellipse cx="85" cy="88" rx="10" ry="14" fill="#121014"/><ellipse cx="139" cy="88" rx="10" ry="14" fill="#121014"/>
+        <circle cx="90" cy="80" r="4.5" fill="#fff"/><circle cx="81" cy="95" r="2.2" fill="#fff"/>
+        <circle cx="144" cy="80" r="4.5" fill="#fff"/><circle cx="135" cy="95" r="2.2" fill="#fff"/>
+        </g>
+        <g class="e-happy"><path d="M66 90 Q83 66 100 90 M120 90 Q137 66 154 90" stroke="#F2D36B" stroke-width="6" fill="none" stroke-linecap="round"/></g>
+        <g class="e-sleep"><path d="M66 82 Q83 98 100 82 M120 82 Q137 98 154 82" stroke="#F2D36B" stroke-width="5" fill="none" stroke-linecap="round"/></g>
+        <ellipse cx="62" cy="110" rx="11" ry="6.5" fill="#F3A6D0" opacity=".8"/><ellipse cx="158" cy="110" rx="11" ry="6.5" fill="#F3A6D0" opacity=".8"/>
+        <path d="M103 104 L117 104 L110 111Z" fill="#F3A6D0" stroke="#121014" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M97 114 Q103.5 121 110 113 Q116.5 121 123 114" stroke="#FBF6EA" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+        <g stroke="#FBF6EA" stroke-width="1.8" stroke-linecap="round"><path d="M54 104 L20 97"/><path d="M54 112 L22 119"/><path d="M166 104 L200 97"/><path d="M166 112 L198 119"/></g>
+        <g fill="none" stroke-linejoin="round" stroke-linecap="round">
+          <path d="M104 146 L152 146 L152 194" stroke="#121014" stroke-width="8"/><path d="M104 146 L152 146 L152 194" stroke="#E3A04A" stroke-width="4"/>
+          <path d="M104 146 L104 194 L152 194 M86 212 L104 194" stroke="#E3A04A" stroke-width="3.5" stroke-dasharray="6 6"/>
+          <path d="M86 162 L134 162 L134 212 L86 212 Z" fill="#E3A04A" fill-opacity=".2" stroke="#121014" stroke-width="8"/>
+          <path d="M86 162 L134 162 L134 212 L86 212 Z" stroke="#E3A04A" stroke-width="4"/>
+          <path d="M86 162 L104 146 M134 162 L152 146 M134 212 L152 194" stroke="#121014" stroke-width="8"/>
+          <path d="M86 162 L104 146 M134 162 L152 146 M134 212 L152 194" stroke="#E3A04A" stroke-width="4"/>
+        </g>
+        <ellipse cx="80" cy="190" rx="16" ry="13" fill="#2B2833" stroke="#121014" stroke-width="3"/>
+        <ellipse cx="156" cy="176" rx="15" ry="13" fill="#2B2833" stroke="#121014" stroke-width="3"/>
+        <g fill="#F3A6D0"><circle cx="73" cy="192" r="2.4"/><circle cx="80" cy="195" r="2.4"/><circle cx="87" cy="192" r="2.4"/><circle cx="150" cy="178" r="2.3"/><circle cx="157" cy="181" r="2.3"/><circle cx="163" cy="178" r="2.3"/></g>
+      </svg>
+      </div>
+      <div class="frame"><div class="mat">
+        <div class="eyebrow">Геометрия</div>
+        <h1>Стереометрия</h1>
+        <p>Прямые и плоскости в пространстве</p>
+        <div class="yarns" id="yarns"></div>
+      </div></div>
+    </div>
+    <nav class="gallery" aria-label="Разделы">
+      <a class="pic" href="#konspekt" data-view="konspekt"><span class="pf"><span class="pm"><svg viewBox="0 0 62 42" aria-hidden="true"><polygon class="icf" points="6,36 18,14 58,14 46,36"/><line class="ica" x1="12" y1="31" x2="50" y2="20"/><circle cx="31" cy="25" r="3" fill="#1D1B1E"/></svg><span class="cap">Конспект</span></span></span></a>
+      <a class="pic" href="#propuski" data-view="propuski"><span class="pf"><span class="pm"><svg viewBox="0 0 62 42" aria-hidden="true"><line class="ic" x1="6" y1="10" x2="56" y2="10"/><line class="ic" x1="6" y1="21" x2="18" y2="21"/><rect x="22" y="15" width="22" height="11" rx="2" fill="#FCF1C2" stroke="#1D1B1E" stroke-width="1.6" stroke-dasharray="3 2"/><line class="ic" x1="48" y1="21" x2="56" y2="21"/><line class="ic" x1="6" y1="32" x2="42" y2="32"/></svg><span class="cap">Пропуски</span></span></span></a>
+      <a class="pic" href="#kartochki" data-view="kartochki"><span class="pf"><span class="pm"><svg viewBox="0 0 62 42" aria-hidden="true"><rect x="10" y="9" width="30" height="26" rx="3" transform="rotate(-10 25 22)" fill="#F3C4E3" stroke="#1D1B1E" stroke-width="2"/><rect x="24" y="8" width="30" height="26" rx="3" transform="rotate(8 39 21)" fill="#FFFDF6" stroke="#1D1B1E" stroke-width="2"/><path class="ica" d="M33 19 L37 24 L46 15"/></svg><span class="cap">Карточки</span></span></span></a>
+      <a class="pic" href="#zadachi" data-view="zadachi"><span class="pf"><span class="pm"><svg viewBox="0 0 62 42" aria-hidden="true"><path class="ic" d="M30 4 L10 36 L46 38 Z M30 4 L54 30 L46 38"/><path class="ic" d="M10 36 L54 30" stroke-dasharray="4 3"/><line class="ica" x1="30" y1="4" x2="30" y2="33"/></svg><span class="cap">Задачи</span></span></span></a>
+      <a class="pic" href="#modeli" data-view="modeli"><span class="pf"><span class="pm"><svg viewBox="0 0 62 42" aria-hidden="true"><path class="ic" d="M14 14 L40 14 L40 38 L14 38 Z M14 14 L24 5 L50 5 L40 14 M50 5 L50 29 L40 38"/><path class="ic" d="M24 5 L24 29 L14 38 M24 29 L50 29" stroke-dasharray="3 3"/><line class="ica" x1="14" y1="38" x2="50" y2="5"/></svg><span class="cap">3D-модели</span></span></span></a>
+      <a class="pic" href="#verno" data-view="verno"><span class="pf"><span class="pm"><svg viewBox="0 0 62 42" aria-hidden="true"><rect x="5" y="7" width="24" height="30" rx="4" transform="rotate(-8 17 22)" fill="#F9E0DB" stroke="#1D1B1E" stroke-width="2"/><path d="M12 17 L22 27 M22 17 L12 27" stroke="#C0392E" stroke-width="2.6" stroke-linecap="round" transform="rotate(-8 17 22)"/><rect x="33" y="6" width="24" height="30" rx="4" transform="rotate(8 45 21)" fill="#DFF0E3" stroke="#1D1B1E" stroke-width="2"/><path d="M38 21 L43 26 L52 16" stroke="#2F7D4D" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="cap">Верно?</span></span></span></a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+
+<!-- ================= KONSPEKT ================= -->
+<section id="view-konspekt" class="view">
+
+  <div class="sheets">
+  <article class="sheet" id="s1">
+    <div class="sheet-head"><h3>Основные аксиомы стереометрии и следствия к ним</h3></div>
+    <div class="sub">Аксиомы</div>
+    <div class="items">
+      <div class="item"><div><span class="tag t-ax">Аксиома 1</span><p>Через любые <em>три точки, не лежащие на одной прямой</em>, проходит плоскость, и притом только одна.</p></div><figure class="fig" data-fig="three"></figure></div>
+      <div class="item"><div><span class="tag t-ax">Аксиома 2</span><p>Если <em>две точки прямой</em> лежат в плоскости, то все точки прямой лежат в этой плоскости.</p></div><figure class="fig" data-fig="linein"></figure></div>
+      <div class="item"><div><span class="tag t-ax">Аксиома 3</span><p>Если две плоскости имеют <em>общую точку</em>, то они имеют общую прямую, на которой лежат все общие точки этих плоскостей.</p></div><figure class="fig" data-fig="twoplanes"></figure></div>
+    </div>
+    <div class="sub">Следствия из аксиом</div>
+    <div class="items">
+      <div class="item"><div><span class="tag t-cor">Следствие 1</span><p>Через <em>прямую и не лежащую на ней точку</em> проходит плоскость, и притом только одна.</p></div><figure class="fig" data-fig="linepoint"></figure></div>
+      <div class="item"><div><span class="tag t-cor">Следствие 2</span><p>Через <em>две пересекающиеся прямые</em> проходит плоскость, и притом только одна.</p></div><figure class="fig" data-fig="twolines"></figure></div>
+    </div>
+  </article>
+
+  <article class="sheet" id="s2">
+    <div class="sheet-head"><h3>Взаимное расположение прямых в пространстве</h3></div>
+    <div class="items">
+      <div class="item"><div><span class="tag t-def">Определение</span><p><b>Параллельные прямые</b> — две прямые в пространстве, которые <em>лежат в одной плоскости</em> и не пересекаются.</p></div><figure class="fig" data-fig="parallel"></figure></div>
+      <div class="item"><div><span class="tag t-def">Определение</span><p><b>Скрещивающиеся прямые</b> — две прямые, которые <em>не лежат в одной плоскости</em>.</p><p style="margin-top:12px"><span class="tag t-sign">Признак</span></p><p>Если одна прямая лежит в плоскости, а другая пересекает эту плоскость в точке, <em>не лежащей на первой прямой</em>, то эти прямые скрещивающиеся.</p></div><figure class="fig" data-fig="skew"></figure></div>
+      <div class="item"><div><span class="tag t-def">Определение</span><p><b>Пересекающиеся прямые</b> — две различные прямые, которые <em>имеют общую точку</em> и лежат в одной плоскости.</p></div><figure class="fig" data-fig="inter"></figure></div>
+      <div class="item solo"><div><span class="tag t-def">Определение</span><p><b>Перпендикулярные прямые</b> в пространстве — две пересекающиеся или скрещивающиеся прямые, <em>угол между которыми равен 90°</em>. Обозначаются: a ⊥ b.</p></div></div>
+    </div>
+  </article>
+
+  <article class="sheet" id="s3">
+    <div class="sheet-head"><h3>Взаимное расположение прямых и плоскостей</h3></div>
+    <div class="sub">Три случая</div>
+    <div class="items">
+      <div class="item solo"><div>
+        <div class="cases">
+          <div class="case"><div data-fig="lp_in"></div><p><b>Прямая лежит в плоскости.</b></p></div>
+          <div class="case"><div data-fig="lp_cross"></div><p><b>Пересекаются:</b> одна общая точка M.</p></div>
+          <div class="case"><div data-fig="lp_par"></div><p><b>Параллельны:</b> нет ни одной общей точки.</p></div>
+        </div>
+      </div></div>
+    </div>
+    <div class="sub">Параллельность прямой и плоскости</div>
+    <div class="items">
+      <div class="item solo"><div><span class="tag t-def">Определение</span><p>Прямую и плоскость называют параллельными, если они <em>не имеют общих точек</em>.</p></div></div>
+      <div class="item solo"><div><span class="tag t-sign">Признак</span><p>Если прямая, не лежащая в данной плоскости, <em>параллельна какой-нибудь прямой, лежащей в этой плоскости</em>, то она параллельна данной плоскости.</p></div></div>
+      <div class="item solo"><div><span class="tag t-prop">Свойство 1</span><p>Если плоскость проходит через данную прямую, параллельную другой плоскости, и пересекает эту плоскость, то <em>линия пересечения плоскостей параллельна данной прямой</em>.</p></div></div>
+      <div class="item solo"><div><span class="tag t-prop">Свойство 2</span><p>Если одна из двух параллельных прямых параллельна данной плоскости, то другая прямая либо <em>также параллельна</em> данной плоскости, либо <em>лежит в этой плоскости</em>.</p></div></div>
+    </div>
+    <div class="sub">Перпендикулярность прямой и плоскости</div>
+    <div class="items">
+      <div class="item solo"><div><span class="tag t-def">Определение</span><p>Прямая перпендикулярна плоскости, если она перпендикулярна <em>к любой прямой</em>, лежащей в этой плоскости.</p></div></div>
+      <div class="item solo"><div><span class="tag t-sign">Признак</span><p>Если прямая перпендикулярна к <em>двум пересекающимся прямым</em>, лежащим в плоскости, то она перпендикулярна к этой плоскости.</p></div></div>
+      <div class="item solo"><div><span class="tag t-prop">Свойство 1</span><p>Если плоскость перпендикулярна одной из двух параллельных прямых, то она <em>перпендикулярна и другой</em>.</p></div></div>
+      <div class="item solo"><div><span class="tag t-prop">Свойство 2</span><p>Две прямые, перпендикулярные одной и той же плоскости, <em>параллельны</em>.</p></div></div>
+      <div class="item solo"><div>
+        <span class="tag t-def">Словарик</span>
+        <dl class="gloss">
+          <div><dt>Перпендикуляр к плоскости</dt><dd>Отрезок прямой, перпендикулярной плоскости, одним концом которого служит точка пересечения прямой и плоскости.</dd></div>
+          <div><dt>Основание перпендикуляра</dt><dd>Конец перпендикуляра, лежащий на плоскости.</dd></div>
+          <div><dt>Наклонная к плоскости</dt><dd>Отрезок, соединяющий точку A вне плоскости с точкой M плоскости и не совпадающий с перпендикуляром из точки A.</dd></div>
+          <div><dt>Основание наклонной</dt><dd>Точка M, лежащая в плоскости.</dd></div>
+        </dl>
+      </div></div>
+    </div>
+    <div class="sub">Теорема о трёх перпендикулярах</div>
+    <div class="items">
+      <div class="item"><div><span class="tag t-thm">Теорема</span><p>Прямая, проведённая в плоскости через основание наклонной <em>перпендикулярно к её проекции</em> на эту плоскость, перпендикулярна и к самой наклонной.</p><p style="color:var(--ink-soft);font-size:.93rem">AH ⊥ α, AM — наклонная, HM — проекция наклонной на α.</p><p style="margin-top:12px"><span class="tag t-thm">Обратная теорема</span></p><p>Прямая, проведённая в плоскости через основание наклонной <em>перпендикулярно к ней</em>, перпендикулярна и к её проекции.</p></div><figure class="fig" data-fig="threeperp"><figcaption>a ⊥ HM ⇔ a ⊥ AM</figcaption></figure></div>
+    </div>
+  </article>
+
+  <article class="sheet" id="s4">
+    <div class="sheet-head"><h3>Взаимное расположение плоскостей</h3></div>
+    <div class="sub">Параллельные плоскости</div>
+    <div class="items">
+      <div class="item"><div><span class="tag t-def">Определение</span><p><b>Параллельные плоскости</b> — плоскости, <em>не имеющие общих точек</em>.</p><p style="margin-top:12px"><span class="tag t-sign">Признак</span></p><p>Если <em>две пересекающиеся прямые</em> одной плоскости соответственно параллельны двум прямым другой плоскости, то эти плоскости параллельны.</p></div><figure class="fig" data-fig="parplanes"></figure></div>
+      <div class="item solo"><div><span class="tag t-prop">Свойство 1</span><p>Если две параллельные плоскости пересечены третьей, то <em>линии их пересечения параллельны</em>.</p></div></div>
+      <div class="item solo"><div><span class="tag t-prop">Свойство 2</span><p>Отрезки параллельных прямых, заключённые между параллельными плоскостями, <em>равны</em>.</p></div></div>
+    </div>
+    <div class="sub">Перпендикулярные плоскости</div>
+    <div class="items">
+      <div class="item"><div><span class="tag t-def">Определение</span><p><b>Перпендикулярные плоскости</b> — две пересекающиеся плоскости, <em>угол между которыми равен 90°</em>.</p><p style="margin-top:12px"><span class="tag t-sign">Признак</span></p><p>Если одна из двух плоскостей проходит через <em>прямую, перпендикулярную другой плоскости</em>, то такие плоскости перпендикулярны.</p></div><figure class="fig" data-fig="perpplanes"></figure></div>
+      <div class="item solo"><div><span class="tag t-prop">Свойство</span><p>Плоскость, перпендикулярная прямой, по которой пересекаются две данные плоскости, <em>перпендикулярна каждой из этих плоскостей</em>.</p></div></div>
+    </div>
+  </article>
+  </div>
+</section>
+
+<!-- ================= PROPUSKI ================= -->
+<section id="view-propuski" class="view" hidden>
+  <div class="modes" role="group" aria-label="Режим игры"><button class="seg" data-gm="calm" aria-pressed="true">Спокойно</button><button class="seg" data-gm="timed" aria-pressed="false">На время · 60 с</button></div>
+  <div class="game-top">
+    <div class="gp"><span class="gp-count" id="gp-count">1 из 16</span><div class="progress"><i id="gp-bar"></i></div></div>
+    <span class="timer" id="gp-timer" hidden>1:00</span>
+    <span class="hand" id="gp-mist">ошибок: 0</span>
+  </div>
+  <div class="field" id="field">
+    <div class="sent" id="sent">
+      <div id="sent-text"></div>
+      <div class="sent-foot"><span class="sent-msg" id="sent-msg">Перетащи слово в пропуск</span></div>
+    </div>
+  </div>
+  <div class="row game-btns">
+    <button class="btn" id="gp-hint">Подсказка</button>
+    <button class="btn" id="gp-skip">Показать ответ</button>
+    <button class="btn primary" id="gp-next" hidden>Дальше →</button>
+  </div>
+</section>
+
+<section id="view-kartochki" class="view" hidden>
+  <div class="fc-zone">
+    <div class="fc-stage">
+      <div class="fc-meta"><span class="count" id="fc-count">1 / 23</span><span class="hand" id="fc-mode">все карточки</span></div>
+      <div class="progress"><i id="fc-bar"></i></div>
+      <button class="fc" id="fc" aria-live="polite">
+        <div class="fc-inner">
+          <div class="fc-face front"><div class="panel"><span class="tag" id="fc-kind">Аксиома</span><p class="fc-q" id="fc-q"></p><span class="fc-hint">нажми, чтобы перевернуть</span></div></div>
+          <div class="fc-face back"><div class="panel"><span class="tag t-thm">Ответ</span><p class="fc-a" id="fc-a"></p></div></div>
+        </div>
+      </button>
+      <div class="fc-nav">
+        <button class="btn again" id="fc-again">Ещё повторю</button>
+        <button class="btn know" id="fc-know">Знаю ✓</button>
+        <button class="btn" id="fc-prev">← Назад</button>
+        <button class="btn" id="fc-next">Дальше →</button>
+      </div>
+    </div>
+    <aside class="fc-side">
+      <h3>Мой прогресс</h3>
+      <div id="fc-cat"></div>
+      <div class="stat"><span>Знаю</span><span id="st-know">0</span></div>
+      <div class="stat"><span>Повторить</span><span id="st-again">0</span></div>
+      <div class="stat"><span>Всего</span><span id="st-all">0</span></div>
+      <button class="btn primary" id="fc-review">Только «повторить»</button>
+      <button class="btn" id="fc-shuffle">Перемешать</button>
+      <button class="btn" id="fc-clear">Сбросить отметки</button>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= ZADACHI ================= -->
+<section id="view-zadachi" class="view" hidden>
+  <div class="task-tabs" id="task-tabs"></div>
+  <div id="task"></div>
+</section>
+
+<section id="view-modeli" class="view" hidden>
+  <div class="m3">
+    <div class="m3-card">
+      <svg id="m3" viewBox="0 0 320 300" role="img" aria-label="Объёмная модель, её можно вращать"></svg>
+      <p class="m3-tip hand" id="m3-tip">Крути модель пальцем или мышкой</p>
+    </div>
+    <div class="m3-panel">
+      <div class="chips" id="m3-models" role="group" aria-label="Модель"></div>
+      <div class="modes" role="group" aria-label="Режим"><button class="seg" data-m="look" aria-pressed="true">Смотреть</button><button class="seg" data-m="find" aria-pressed="false">Найди на чертеже</button></div>
+      <div id="m3-look" class="presets-wrap">
+        <div class="presets" id="m3-presets"></div>
+        <div class="m3-explain" id="m3-explain"></div>
+      </div>
+      <div id="m3-find" hidden>
+        <div class="m3-q" id="m3-q"></div>
+        <p class="m3-fb" id="m3-fb" aria-live="polite"></p>
+        <div class="row"><button class="btn primary" id="m3-next">Другой вопрос</button><span class="hand" id="m3-score" style="align-self:center;color:var(--wall-ink)"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="view-verno" class="view" hidden>
+  <div class="game-top">
+    <div class="gp"><span class="gp-count" id="tf-count">1 из 20</span><div class="progress"><i id="tf-bar"></i></div></div>
+    <span class="hand" id="tf-score">верно: 0</span>
+  </div>
+  <div class="tf-stage" id="tf-stage">
+    <div class="tf-under"></div>
+    <div class="tf-card" id="tf-card"><div class="tf-in"><span class="tf-lean no">неверно</span><span class="tf-lean yes">верно</span><span class="tf-n" id="tf-n">Утверждение</span><p class="tf-q" id="tf-q"></p><span class="tf-n">Смахни влево, если неверно, и вправо, если верно</span></div></div>
+  </div>
+  <div class="tf-btns" id="tf-btns"><button class="btn no" id="tf-no">← Неверно</button><button class="btn yes" id="tf-yes">Верно →</button></div>
+  <div id="tf-res"></div>
+</section>
+
+</div>
+</main>
+
+<button class="totop" id="totop" aria-label="Наверх, к картинам"><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M15 24 L15 7 M8 13 L15 6 L22 13" fill="none" stroke="#1D1B1E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+
+<footer class="floor">
+  <div class="floor-cats" aria-hidden="true">
+    <svg viewBox="0 0 170 84" width="150">
+      <path d="M140 66 Q172 64 162 38" stroke="#1D1B1E" stroke-width="15" fill="none" stroke-linecap="round"/>
+      <path d="M140 66 Q172 64 162 38" stroke="#E39A4E" stroke-width="9" fill="none" stroke-linecap="round"/>
+      <ellipse cx="98" cy="57" rx="56" ry="24" fill="#E39A4E" stroke="#1D1B1E" stroke-width="2.6"/>
+      <ellipse cx="88" cy="71" rx="30" ry="7" fill="#FBF0DE"/>
+      <g stroke="#B9692B" stroke-width="3.4" fill="none" stroke-linecap="round"><path d="M92 35 Q96 43 91 50"/><path d="M106 34 Q111 44 105 52"/><path d="M120 35 Q125 45 119 53"/><path d="M134 40 Q138 48 133 55"/></g>
+      <path d="M20 42 L20 14 L40 30Z" fill="#E39A4E" stroke="#1D1B1E" stroke-width="2.6" stroke-linejoin="round"/>
+      <path d="M50 28 L68 16 L68 40Z" fill="#E39A4E" stroke="#1D1B1E" stroke-width="2.6" stroke-linejoin="round"/>
+      <path d="M24 34 L24 22 L33 30Z" fill="#F3C4E3"/><path d="M55 28 L64 22 L64 34Z" fill="#F3C4E3"/>
+      <ellipse cx="44" cy="52" rx="28" ry="25" fill="#E39A4E" stroke="#1D1B1E" stroke-width="2.6"/>
+      <ellipse cx="46" cy="63" rx="13" ry="8" fill="#FBF0DE"/>
+      <path d="M27 50 Q33 56 39 50 M49 50 Q55 56 61 50" stroke="#1D1B1E" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+      <ellipse cx="26" cy="60" rx="5" ry="3" fill="#F3A6D0" opacity=".85"/><ellipse cx="64" cy="60" rx="5" ry="3" fill="#F3A6D0" opacity=".85"/>
+      <path d="M42.5 58 L48.5 58 L45.5 61Z" fill="#DE8BC0" stroke="#1D1B1E" stroke-width="1.2" stroke-linejoin="round"/>
+      <path d="M41 64 Q43 66.5 45.5 64 Q48 66.5 50 64" stroke="#1D1B1E" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <ellipse cx="68" cy="76" rx="11" ry="6" fill="#FBF0DE" stroke="#1D1B1E" stroke-width="2.2"/>
+    </svg>
+  </div>
+  <div class="wrap"></div>
+</footer>
+
+<script>
+/* ---------- shared: storage, sound, night, progress ---------- */
+const store = { get(k,d){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } }, set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} } };
+function addToSet(key, id){ const a=store.get(key,[]); if(!a.includes(id)){ a.push(id); store.set(key,a); } renderYarns(); }
+
+const SND = { on: !!store.get('st-sound', false), ctx:null };
+function actx(){
+  if(!SND.ctx){ const C=window.AudioContext||window.webkitAudioContext; if(!C) return null; try{ SND.ctx=new C(); }catch(e){ return null; } }
+  if(SND.ctx.state==='suspended') SND.ctx.resume();
+  return SND.ctx;
+}
+function tone(c, f, t, dur, type, vol, f2){
+  const o=c.createOscillator(), g=c.createGain();
+  o.type=type; o.frequency.setValueAtTime(f,t); if(f2) o.frequency.exponentialRampToValueAtTime(f2,t+dur);
+  g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+.015); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.connect(g).connect(c.destination); o.start(t); o.stop(t+dur+.05);
+}
+function purr(c, t){
+  const o=c.createOscillator(), lfo=c.createOscillator(), lg=c.createGain(), g=c.createGain(), f=c.createBiquadFilter();
+  o.type='sawtooth'; o.frequency.value=48; f.type='lowpass'; f.frequency.value=320;
+  lfo.frequency.value=24; lg.gain.value=.05; g.gain.value=.0001;
+  g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(.07,t+.08); g.gain.exponentialRampToValueAtTime(0.0001,t+.7);
+  lfo.connect(lg).connect(g.gain); o.connect(f).connect(g).connect(c.destination);
+  o.start(t); lfo.start(t); o.stop(t+.75); lfo.stop(t+.75);
+}
+function meow(c, t){
+  const o=c.createOscillator(), f=c.createBiquadFilter(), g=c.createGain();
+  o.type='sawtooth'; f.type='bandpass'; f.Q.value=3;
+  o.frequency.setValueAtTime(480,t); o.frequency.linearRampToValueAtTime(760,t+.16); o.frequency.linearRampToValueAtTime(430,t+.5);
+  f.frequency.setValueAtTime(900,t); f.frequency.linearRampToValueAtTime(1700,t+.18); f.frequency.linearRampToValueAtTime(800,t+.5);
+  g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(.16,t+.05); g.gain.exponentialRampToValueAtTime(0.0001,t+.55);
+  o.connect(f).connect(g).connect(c.destination); o.start(t); o.stop(t+.6);
+}
+function play(kind){
+  if(!SND.on) return; const c=actx(); if(!c) return; const t=c.currentTime+.01;
+  if(kind==='ok'){ tone(c,660,t,.12,'triangle',.12); tone(c,990,t+.09,.2,'triangle',.12); purr(c,t+.2); }
+  else if(kind==='bad'){ meow(c,t); }
+  else if(kind==='tick'){ tone(c,1300,t,.05,'square',.025); }
+  else if(kind==='flip'){ tone(c,420,t,.08,'triangle',.06,700); }
+  else if(kind==='win'){ [523,659,784,1046].forEach((f,i)=>tone(c,f,t+i*.12,.22,'triangle',.12)); purr(c,t+.5); }
+}
+const soundBtn=document.getElementById('sound-btn');
+function setSound(on){ SND.on=on; soundBtn.setAttribute('aria-pressed', on); store.set('st-sound', on); if(on){ actx(); play('ok'); } }
+soundBtn.onclick=()=>setSound(!SND.on);
+soundBtn.setAttribute('aria-pressed', SND.on);
+
+const nightBtn=document.getElementById('night-btn');
+function setNight(on){ document.documentElement.toggleAttribute('data-night', on); nightBtn.setAttribute('aria-checked', on); nightBtn.setAttribute('aria-label', on?'Включить свет':'Ночь: выключить свет'); store.set('st-night', on); }
+nightBtn.onclick=()=>{ setNight(!document.documentElement.hasAttribute('data-night')); play('tick'); };
+setNight(!!store.get('st-night', false));
+
+const totop=document.getElementById('totop');
+window.addEventListener('scroll', ()=> totop.classList.toggle('show', window.scrollY>480), {passive:true});
+totop.onclick=()=> window.scrollTo({top:0, behavior:'smooth'});
+
+const YARN_LIST=[
+  ['propuski','Пропуски', ()=>store.get('st-gaps',[]).length/16],
+  ['kartochki','Карточки', ()=>Object.values(store.get('stereo-marks',{})).filter(v=>v==='k').length/23],
+  ['zadachi','Задачи', ()=>store.get('st-tasks',[]).length/8],
+  ['modeli','Найди на чертеже', ()=>Math.min(1, store.get('st-find',0)/10)],
+  ['verno','Верно или нет', ()=>store.get('st-tf',[]).length/20]
+];
+function renderYarns(){
+  const el=document.getElementById('yarns'); let full=0;
+  el.innerHTML='<span class="yl">клубки знаний:</span>'+YARN_LIST.map(([h,n,f])=>{
+    const p=Math.round(Math.min(1,f())*100); if(p>=100) full++;
+    return `<button class="yb${p>=100?' full':''}" style="--p:${p}" data-h="${h}" title="${n}: ${p}%" aria-label="${n}: ${p}%"></button>`;
+  }).join('');
+  el.querySelectorAll('.yb').forEach(b=>b.onclick=()=>{ location.hash=b.dataset.h; });
+  document.getElementById('hero-cat').classList.toggle('happy', full===YARN_LIST.length);
+}
+/* ---------- figures ---------- */
+const PL = '20,110 75,50 240,50 185,110';
+const sv = (inner, vb='0 0 260 140') => `<svg viewBox="${vb}" aria-hidden="true">${inner}</svg>`;
+const plane = (pts=PL, cls='pl') => `<polygon class="${cls}" points="${pts}"/>`;
+const dot = (x,y,l,dx=6,dy=-6,c='lb') => `<circle class="pt" cx="${x}" cy="${y}" r="4"/>` + (l?`<text class="${c}" x="${x+dx}" y="${y+dy}">${l}</text>`:'');
+const L = (x1,y1,x2,y2,c='') => `<line class="ln ${c}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
+const T = (x,y,s,c='lb') => `<text class="${c}" x="${x}" y="${y}">${s}</text>`;
+const alpha = (x=200,y=102) => T(x,y,'α','lbg');
+
+const FIG = {
+  three: sv(plane()+dot(90,84,'A',-18,-4)+dot(150,68,'B',4,-6)+dot(168,96,'C',6,0)+alpha(118,104)),
+  linein: sv(plane()+L(38,98,226,60)+dot(95,86.5,'A',-6,18)+dot(165,72,'B',-4,18)+alpha(130,106)),
+  twoplanes: sv(plane('20,120 70,80 240,80 190,120')+`<polygon class="pl2" points="45,100 215,100 235,20 65,20"/>`+L(35,100,222,100,'ac')+dot(130,100,'C',-4,18)+T(60,116,'α','lbg')+T(238,50,'β','lbg')+T(230,106,'a','lbo')),
+  linepoint: sv(plane()+L(45,95,215,70)+T(60,84,'a','lbo')+dot(130,98,'B',6,10)+alpha(170,104)),
+  twolines: sv(plane()+L(55,98,200,62)+L(85,62,195,100)+T(205,72,'a','lbo')+T(68,74,'b','lbo')+dot(133,79,'',0,0)+alpha(108,102)),
+  parallel: sv(plane()+L(45,95,172,95)+L(80,66,200,66)+T(178,100,'a','lbo')+T(206,71,'b','lbo')+T(110,86,'α','lbg')),
+  skew: sv(plane()+L(45,100,180,90)+T(186,92,'a','lbo')+L(162,4,150,58)+L(150,58,146,78,'ds')+dot(150,58,'A',8,4)+T(80,74,'α','lbg')),
+  inter: sv(plane()+L(55,98,200,62)+L(85,62,195,100)+T(205,72,'a','lbo')+T(68,74,'b','lbo')+dot(133,79,'A',-6,-10)+alpha(108,102)),
+  lp_in: sv(plane()+L(45,95,215,64)+dot(95,86,'A',-4,18)+dot(165,73,'B',-4,18)),
+  lp_cross: sv(plane('20,120 75,60 240,60 185,120')+L(118,4,130,88)+L(130,88,134,116,'ds')+L(134,116,138,138)+dot(130,88,'M',8,4)+T(105,22,'a','lbo'),'0 0 260 140'),
+  lp_par: sv(plane('20,125 75,65 240,65 185,125')+L(40,28,220,28)+T(224,34,'a','lbo')+T(150,116,'α','lbg')),
+  threeperp: sv(plane('15,125 70,60 250,60 195,125')+L(80,100,175,100,'ac')+L(205,64,157,121)+L(80,15,80,100)+L(80,15,175,100)+`<polyline class="ln thin" points="80,90 90,90 90,100"/><polyline class="ln thin" points="166,100 171.8,93.1 180.8,93.1"/>`+dot(80,15,'A',-20,6)+dot(80,100,'H',-22,12)+dot(175,100,'M',9,14)+T(212,78,'a','lbo')+T(112,82,'α','lbg'),'0 0 260 140'),
+  parplanes: sv(plane('20,128 70,96 240,96 190,128')+plane('20,58 70,26 240,26 190,58','pl2')+T(160,122,'α','lbg')+T(160,52,'β','lbg'),'0 0 260 140'),
+  perpplanes: sv(plane('20,122 70,86 240,86 190,122')+`<polygon class="pl2" points="60,104 200,104 200,14 60,14"/>`+L(40,104,215,104,'ac')+`<line class="ln thin" x1="130" y1="104" x2="130" y2="44"/><line class="ln thin" x1="130" y1="104" x2="105" y2="122"/><polyline class="ln thin" points="130,95 123,100 123,109"/><circle class="pt" cx="130" cy="104" r="3"/>`+T(165,118,'α','lbg')+T(210,34,'β','lbg'),'0 0 260 140'),
+  p1: sv(plane('15,125 70,65 250,65 195,125')+L(95,15,95,105)+L(95,15,195,92)+L(95,105,195,92,'ac')+`<polyline class="ln thin" points="95,95 105,93.7 105,103.7"/>`+dot(95,15,'A',-20,6)+dot(95,105,'H',-22,12)+dot(195,92,'M',8,-4)+T(76,64,'6','lbo')+T(150,46,'10','lbo')+T(40,116,'α','lbg'),'0 0 260 140'),
+  p2: sv(L(40,125,160,125)+L(160,125,225,82)+L(225,82,105,82,'ds thin')+L(105,82,40,125,'ds thin')+L(40,15,40,125)+L(40,15,160,125)+L(40,15,225,82)+L(40,15,105,82,'ac ds')+`<polyline class="ln thin" points="40,115 48.3,109.5 48.3,119.5"/><polyline class="ln thin" points="98,74.8 108,74.8 115,82"/>`+dot(40,15,'S',-20,6)+dot(40,125,'A',-18,8)+dot(160,125,'B',4,18)+dot(225,82,'C',6,6)+dot(105,82,'D',-4,20)+T(22,76,'4','lbo')+T(96,146,'3','lbo'),'0 0 260 150'),
+  p3: sv(plane('15,125 70,65 250,65 195,125')+L(125,12,125,100)+L(125,12,78,112)+L(125,12,218,88)+L(125,100,78,112,'ac')+L(125,100,218,88,'ac')+`<polyline class="ln thin" points="125,90 135,88.7 135,98.7"/>`+dot(125,12,'M',8,4)+dot(125,100,'H',-6,22)+dot(78,112,'A',-18,6)+dot(218,88,'B',6,16)+T(86,56,'10','lbo')+T(178,40,'17','lbo')+T(98,100,'x','lbo')+T(160,114,'x+9','lbo')+T(34,117,'α','lbg'),'0 0 260 140'),
+  p4: sv(plane('15,125 70,65 250,65 195,125')+L(125,12,125,100)+L(125,12,78,112)+L(125,12,218,88)+L(125,100,78,112,'ac')+L(125,100,218,88,'ac')+`<polyline class="ln thin" points="125,90 135,88.7 135,98.7"/>`+dot(125,12,'M',8,4)+dot(125,100,'H',-6,22)+dot(78,112,'A',-18,6)+dot(218,88,'B',6,16)+T(86,56,'13','lbo')+T(178,40,'20','lbo')+T(98,100,'5','lbo')+T(163,114,'?','lbo')+T(34,117,'α','lbg'),'0 0 260 140'),
+  p5: sv(plane('15,125 70,65 250,65 195,125')+L(70,72,70,104)+L(200,16,200,92)+L(135,44,135,98,'ac ds')+L(70,72,200,16)+L(70,104,200,92,'thin')+`<polyline class="ln thin" points="70,96 78,95.3 78,103.3"/><polyline class="ln thin" points="200,84 192,84.7 192,92.7"/>`+dot(70,72,'A',-20,2)+dot(200,16,'B',8,6)+dot(135,44,'M',-6,-10)+dot(70,104,'A₁',-28,10)+dot(200,92,'B₁',6,18)+dot(135,98,'M₁',4,20)+T(54,94,'3','lbo')+T(207,58,'7','lbo')+T(36,117,'α','lbg'),'0 0 260 140'),
+  p6: sv(plane('15,122 60,90 250,90 205,122')+plane('30,58 70,30 240,30 200,58','pl2')+L(130,6,75,106)+L(130,6,180,101)+L(108,46,150,44,'ac')+L(75,106,180,101,'ac')+dot(130,6,'O',8,6)+dot(108,46,'A',-20,4)+dot(150,44,'B',8,4)+dot(75,106,'A₁',-30,8)+dot(180,101,'B₁',8,14)+T(104,26,'4','lbo')+T(74,78,'6','lbo')+T(124,62,'5','lbo')+T(190,52,'α','lbg')+T(178,116,'β','lbg'),'0 0 260 130'),
+  p7: sv(L(40,130,150,130)+L(150,130,200,95)+L(40,60,150,60)+L(150,60,200,25)+L(40,60,90,25)+L(90,25,200,25)+L(40,60,40,130)+L(150,60,150,130)+L(200,25,200,95)+L(40,130,90,95,'ds thin')+L(90,95,200,95,'ds thin')+L(90,25,90,95,'ds thin')+L(90,25,200,95,'ac ds')+`<polyline class="ln thin" points="192,95 190,90 195.5,86"/>`+dot(40,130,'A',-18,8)+dot(150,130,'B',2,18)+dot(200,95,'C',8,10)+dot(90,95,'D',-20,16)+dot(40,60,'A₁',-30,2)+dot(150,60,'B₁',2,18)+dot(200,25,'C₁',8,0)+dot(90,25,'D₁',-12,-8)+T(74,62,'8','lbo')+T(140,110,'6','lbo'),'0 0 260 150'),
+  p8: sv(plane('20,128 75,88 240,88 185,128')+`<polygon class="pl2" points="50,108 212,108 212,14 50,14"/>`+L(36,108,226,108)+L(80,108,62,121)+L(170,108,170,64)+L(62,121,170,64,'ac')+L(62,121,170,108,'thin ds')+`<polyline class="ln thin" points="73,108 69,111 76,111"/><polyline class="ln thin" points="170,100 178,100 178,108"/>`+dot(62,121,'A',-20,8)+dot(80,108,'C',2,-8)+dot(170,108,'D',6,18)+dot(170,64,'B',8,0)+T(52,112,'3','lbo')+T(176,88,'4','lbo')+T(116,102,'12','lbo')+T(230,104,'c','lbo')+T(140,124,'α','lbg')+T(190,32,'β','lbg'),'0 0 260 140')
+};
+document.querySelectorAll('[data-fig]').forEach(el=>{
+  const s = FIG[el.dataset.fig]; if(!s) return;
+  el.insertAdjacentHTML('afterbegin', s);
+});
+
+/* ---------- grey cat (moods) ---------- */
+function cat(mood){
+  const eyes = {
+    happy:'<path d="M38 50 Q46 40 54 50 M66 50 Q74 40 82 50" stroke="#1D1B1E" stroke-width="3.2" fill="none" stroke-linecap="round"/>',
+    open:'<ellipse cx="46" cy="48" rx="8.5" ry="10" fill="#fff" stroke="#1D1B1E" stroke-width="2.2"/><ellipse cx="74" cy="48" rx="8.5" ry="10" fill="#fff" stroke="#1D1B1E" stroke-width="2.2"/><ellipse cx="47" cy="50" rx="5.2" ry="7" fill="#1D1B1E"/><ellipse cx="75" cy="50" rx="5.2" ry="7" fill="#1D1B1E"/><circle cx="49.5" cy="46" r="2.2" fill="#fff"/><circle cx="77.5" cy="46" r="2.2" fill="#fff"/>',
+    sleepy:'<path d="M38 48 Q46 55 54 48 M66 48 Q74 55 82 48" stroke="#1D1B1E" stroke-width="3" fill="none" stroke-linecap="round"/>'
+  }[mood] || '';
+  return `<path d="M86 132 Q122 122 108 86" stroke="#1D1B1E" stroke-width="14" fill="none" stroke-linecap="round"/>
+  <path d="M86 132 Q122 122 108 86" stroke="#5D6378" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <path d="M30 138 C26 100 40 76 60 76 C80 76 94 100 90 138Z" fill="#5D6378" stroke="#1D1B1E" stroke-width="2.6"/>
+  <ellipse cx="60" cy="116" rx="14" ry="17" fill="#8A90A6"/>
+  <ellipse cx="48" cy="135" rx="9" ry="5" fill="#8A90A6" stroke="#1D1B1E" stroke-width="2"/><ellipse cx="72" cy="135" rx="9" ry="5" fill="#8A90A6" stroke="#1D1B1E" stroke-width="2"/>
+  <path d="M24 40 L20 4 L50 24Z" fill="#5D6378" stroke="#1D1B1E" stroke-width="2.6" stroke-linejoin="round"/><path d="M96 40 L100 4 L70 24Z" fill="#5D6378" stroke="#1D1B1E" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M28 32 L26 14 L42 25Z" fill="#F3C4E3"/><path d="M92 32 L94 14 L78 25Z" fill="#F3C4E3"/>
+  <ellipse cx="60" cy="50" rx="39" ry="32" fill="#5D6378" stroke="#1D1B1E" stroke-width="2.6"/>
+  ${eyes}
+  <ellipse cx="34" cy="63" rx="6" ry="3.6" fill="#F3A6D0" opacity=".85"/><ellipse cx="86" cy="63" rx="6" ry="3.6" fill="#F3A6D0" opacity=".85"/>
+  <path d="M56 59 L64 59 L60 63Z" fill="#F3A6D0" stroke="#1D1B1E" stroke-width="1.3" stroke-linejoin="round"/>
+  <path d="M54 66 Q57 69.5 60 66 Q63 69.5 66 66" stroke="#1D1B1E" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <g stroke="#1D1B1E" stroke-width="1.3" stroke-linecap="round"><path d="M30 61 L12 57"/><path d="M30 66 L13 69"/><path d="M90 61 L108 57"/><path d="M90 66 L107 69"/></g>`;
+}
+const catSvg = m => `<svg viewBox="0 0 120 140" aria-hidden="true">${cat(m)}</svg>`;
+
+/* ---------- routing ---------- */
+const VIEWS = ['konspekt','propuski','kartochki','zadachi','modeli','verno'];
+let firstRoute = true;
+function route(){
+  const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'konspekt';
+  VIEWS.forEach(n => document.getElementById('view-'+n).hidden = n!==v);
+  document.querySelectorAll('.pic').forEach(t => {
+    if(t.dataset.view===v){
+      t.setAttribute('aria-current','page');
+      if(!firstRoute){ t.classList.remove('swing'); void t.offsetWidth; t.classList.add('swing'); }
+    } else t.removeAttribute('aria-current');
+  });
+  firstRoute = false;
+  if(v==='propuski') gameShow(); else gameHide();
+  if(v==='modeli') m3Show(); else m3Hide();
+}
+window.addEventListener('hashchange', ()=>{ route(); document.querySelector('main').scrollIntoView({behavior:'smooth', block:'start'}); });
+
+/* ---------- fill in the gaps ---------- */
+/* {answer|alt/distractor,distractor} — every distractor has the same case and number as the answer */
+const GAPS = [
+  'Через любые три точки, не лежащие на одной {прямой/плоскости,окружности,грани}, проходит {плоскость/прямая,окружность,сфера}, и притом только одна.',
+  'Если две точки прямой лежат в плоскости, то {все/только эти,не все,лишь некоторые} точки прямой лежат в этой плоскости.',
+  'Если две плоскости имеют общую точку, то они имеют общую {прямую/плоскость,грань,окружность}, на которой лежат {все/только две,не все,лишь некоторые} общие точки этих плоскостей.',
+  'Через прямую и не лежащую на ней {точку/прямую,плоскость,окружность} проходит плоскость, и притом только одна.',
+  'Через две {пересекающиеся/скрещивающиеся,любые,совпадающие,произвольные} прямые проходит плоскость, и притом только одна.',
+  'Параллельные прямые — две прямые, которые {лежат/не лежат,могут не лежать,не обязательно лежат} в одной плоскости и {не пересекаются/пересекаются,скрещиваются,перпендикулярны}.',
+  '{Скрещивающиеся/Параллельные,Пересекающиеся,Перпендикулярные,Совпадающие} прямые — две прямые, которые не лежат в одной плоскости.',
+  'Перпендикулярные прямые — пересекающиеся или скрещивающиеся прямые, угол между которыми равен {90°|90/180°,60°,45°,0°}.',
+  'Если прямая, не лежащая в плоскости, {параллельна/перпендикулярна,не параллельна,наклонна к} какой-нибудь прямой этой плоскости, то она параллельна данной плоскости.',
+  'Если прямая перпендикулярна к двум {пересекающимся/параллельным,любым,совпадающим} прямым, лежащим в плоскости, то она {перпендикулярна/параллельна,наклонна,не перпендикулярна} к этой плоскости.',
+  'Две прямые, перпендикулярные одной и той же плоскости, {параллельны/перпендикулярны,пересекаются,скрещиваются,совпадают}.',
+  'Наклонная — отрезок, соединяющий точку вне плоскости с точкой плоскости и не являющийся {перпендикуляром/проекцией,высотой,касательной,отрезком} к этой плоскости.',
+  'Прямая, проведённая в плоскости через основание наклонной перпендикулярно к её {проекции/перпендикуляру,середине}, перпендикулярна и к самой {наклонной/плоскости,высоте,точке}.',
+  'Если две параллельные плоскости пересечены третьей, то линии их пересечения {параллельны/перпендикулярны,пересекаются,скрещиваются,совпадают}.',
+  'Отрезки {параллельных/любых,пересекающихся,скрещивающихся} прямых, заключённые между параллельными плоскостями, {равны/перпендикулярны,не равны,пересекаются}.',
+  'Если одна из двух плоскостей проходит через прямую, {перпендикулярную/параллельную,наклонную к,принадлежащую} другой плоскости, то такие плоскости {перпендикулярны/параллельны,совпадают,не перпендикулярны}.'
+];
+const norm = s => s.toLowerCase().replace(/ё/g,'е').replace(/[°\s.,!]/g,'');
+const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const field = document.getElementById('field'), sent = document.getElementById('sent'), sentText = document.getElementById('sent-text');
+const G = { order:[], idx:0, mist:0, flies:[], solved:false, started:false, raf:0, last:0, zones:[], mode:'calm', time:60, done:0, ended:false, tmr:0, tLast:0 };
+const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];} return a; };
+const fits = (word, slot) => slot.dataset.ans.split('|').some(a=>norm(a)===norm(word));
+
+function zones(){
+  const W = field.clientWidth, H = field.clientHeight;
+  const fr = field.getBoundingClientRect(), cr = sent.getBoundingClientRect();
+  const L = cr.left - fr.left, R = cr.right - fr.left, B = cr.bottom - fr.top;
+  if(L >= 180) G.zones = [{x0:10,x1:L-12,y0:10,y1:H-10},{x0:R+12,x1:W-10,y0:10,y1:H-10}];
+  else { const z={x0:10,x1:W-10,y0:B+14,y1:H-10}; G.zones=[z,z]; }
+}
+function newGame(){
+  G.order = shuffle(GAPS.map((_,i)=>i)); G.idx=0; G.mist=0; G.done=0; G.ended=false;
+  const nx=document.getElementById('gp-next'); nx.textContent='Дальше →';
+  document.getElementById('gp-timer').hidden = G.mode!=='timed';
+  document.getElementById('gp-skip').textContent = G.mode==='timed' ? 'Пропустить' : 'Показать ответ';
+  stopTimer();
+  if(G.mode==='timed'){ G.time=60; startTimer(); }
+  showSentence();
+}
+function startTimer(){ stopTimer(); G.tLast=performance.now(); G.tmr=setInterval(timerTick, 200); }
+function stopTimer(){ clearInterval(G.tmr); G.tmr=0; }
+function timerTick(){
+  const now=performance.now(); G.time=Math.max(0, G.time-(now-G.tLast)/1000); G.tLast=now;
+  const el=document.getElementById('gp-timer'), sec=Math.ceil(G.time);
+  el.textContent = '0:'+String(sec).padStart(2,'0'); el.classList.toggle('low', G.time<=10);
+  updateTop();
+  if(G.time<=0) timedFinish();
+}
+function timedFinish(){
+  stopTimer(); G.ended=true; clearFlies(); sent.classList.add('done');
+  const best=store.get('st-best',0), rec=G.done>best;
+  if(rec) store.set('st-best', G.done);
+  const mood = G.done>=8?'happy': G.done>=4?'open':'sleepy';
+  sentText.innerHTML = `<div class="finish"><strong>Время вышло! Решено: ${G.done}</strong>${rec&&G.done>0?'Это новый рекорд!':`Рекорд: ${Math.max(best,G.done)}. Попробуй побить его.`}</div>`;
+  setMsg('Сыграем ещё?', mood); updateTop(); play(rec&&G.done>0?'win':'flip');
+  document.getElementById('gp-hint').hidden=true; document.getElementById('gp-skip').hidden=true;
+  const nx=document.getElementById('gp-next'); nx.hidden=false; nx.textContent='Ещё раз';
+}
+document.querySelectorAll('[data-gm]').forEach(b=>b.onclick=()=>{
+  G.mode=b.dataset.gm; document.querySelectorAll('[data-gm]').forEach(x=>x.setAttribute('aria-pressed', x===b));
+  if(G.started) newGame();
+});
+function clearFlies(){ G.flies.forEach(f=>f.el.remove()); G.flies=[]; }
+function setMsg(t, mood){ document.getElementById('sent-msg').textContent=t; }
+function updateTop(){
+  if(G.mode==='timed'){
+    document.getElementById('gp-count').textContent = `решено: ${G.done} · рекорд: ${Math.max(store.get('st-best',0), G.ended?G.done:0)}`;
+    document.getElementById('gp-bar').style.width = (G.time/60*100)+'%';
+    document.getElementById('gp-mist').textContent = 'ошибок: '+G.mist;
+    return;
+  }
+  const n=GAPS.length, k=Math.min(G.idx+1,n);
+  document.getElementById('gp-count').textContent = G.idx>=n ? `Готово: ${n} из ${n}` : `${k} из ${n}`;
+  document.getElementById('gp-bar').style.width = (Math.min(G.idx + (G.solved?1:0), n)/n*100)+'%';
+  document.getElementById('gp-mist').textContent = 'ошибок: '+G.mist;
+}
+function showSentence(){
+  clearFlies(); G.solved=false; sent.classList.remove('done');
+  document.getElementById('gp-next').hidden=true; document.getElementById('gp-skip').hidden=false; document.getElementById('gp-hint').hidden=false;
+  if(G.idx >= GAPS.length){ if(G.mode==='timed'){ G.order=shuffle(G.order); G.idx=0; } else return finish(); }
+  const t = GAPS[G.order[G.idx]], answers=[], pools=[];
+  sentText.innerHTML = t.replace(/\{([^}]+)\}/g,(_,raw)=>{
+    const [a,d='']=raw.split('/'), w=a.split('|')[0], ds=d?d.split(','):[];
+    answers.push(w); pools.push(ds);
+    const len=Math.max(w.length,...ds.map(x=>x.length),3);
+    return `<span class="slot" data-ans="${a}" style="min-width:calc(${len}*0.48em + 1.2em)"></span>`;
+  });
+  setMsg('Перетащи слово в пропуск','open'); updateTop();
+  const need=6-answers.length, ps=pools.map(p=>shuffle(p.filter(x=>!answers.some(a=>norm(a)===norm(x))))), wrong=[];
+  for(let k=0; wrong.length<need && ps.some(p=>p.length); k++){ const p=ps[k%ps.length]; if(p.length){ const x=p.pop(); if(!wrong.some(y=>norm(y)===norm(x))) wrong.push(x); } }
+  zones();
+  shuffle(answers.concat(wrong)).forEach((w,i)=>spawn(w,i));
+  layoutHomes();
+  if(reduceMotion) placeStatic();
+}
+function spawn(word, i){
+  const el = document.createElement('div'); el.className='fly'; el.textContent=word; field.appendChild(el);
+  const side = i%2, w=el.offsetWidth, h=el.offsetHeight, W=field.clientWidth, H=field.clientHeight;
+  const f = { el, word, w, h, side, x: side? W+20+i*30 : -w-20-i*30, y: H*.55, hx:0, hy:0, ph:Math.random()*6.28, drag:false };
+  G.flies.push(f); bindDrag(f); draw(f, 0);
+}
+/* every word gets its own fixed spot, so words never overlap or drift */
+function layoutHomes(){
+  const fl = G.flies.filter(f=>!f.leaving && !f.gone); if(!fl.length) return;
+  fl.forEach(f=>{ f.w=f.el.offsetWidth; f.h=f.el.offsetHeight; });
+  const zs = G.zones[0]===G.zones[1] ? [G.zones[0]] : G.zones, GAP=14;
+  const rh = Math.max(...fl.map(f=>f.h));
+  zs.forEach((z,zi)=>{
+    const items = zs.length===1 ? fl : fl.filter(f=>f.side===zi);
+    const W=z.x1-z.x0, rows=[]; let row=[], rw=0;
+    items.forEach(f=>{ const need=f.w+(row.length?GAP:0); if(row.length && rw+need>W){ rows.push(row); row=[]; rw=0; } rw+= f.w+(row.length?GAP:0); row.push(f); });
+    if(row.length) rows.push(row);
+    const H=z.y1-z.y0, gy=Math.max(6,(H-rows.length*rh)/(rows.length+1));
+    rows.forEach((r,ri)=>{
+      const tw=r.reduce((a,f)=>a+f.w,0), spare=Math.max(0,W-tw-GAP*(r.length-1));
+      const wts=r.map(()=>.6+Math.random()*.8).concat([.6+Math.random()*.8]), ws=wts.reduce((a,b)=>a+b,0);
+      let x=z.x0 + spare*wts[0]/ws;
+      const y=z.y0 + gy*(ri+1) + rh*ri;
+      r.forEach((f,k)=>{ f.hx=Math.min(x, z.x1-f.w); f.hy=Math.min(y + (Math.random()-.5)*Math.min(gy*.5,12), z.y1-f.h); x+=f.w+GAP+spare*wts[k+1]/ws; });
+    });
+  });
+}
+function placeStatic(){ G.flies.forEach(f=>{ f.x=f.hx; f.y=f.hy; draw(f,0); }); }
+function draw(f,t){
+  const bob = f.drag||reduceMotion ? 0 : Math.sin(t/1400+f.ph)*1.2, rot = f.drag||reduceMotion ? 0 : Math.sin(t/1900+f.ph)*.8;
+  f.el.style.transform = `translate(${f.x.toFixed(1)}px,${(f.y+bob).toFixed(1)}px) rotate(${rot.toFixed(2)}deg)`;
+}
+function tick(t){
+  const dt = Math.min(.05, (t-(G.last||t))/1000); G.last=t;
+  const k = 1-Math.exp(-dt*6);
+  G.flies.forEach(f=>{
+    if(f.drag || f.gone) return;
+    if(f.leaving){ f.x+=f.vx*dt; return; }
+    if(reduceMotion){ f.x=f.hx; f.y=f.hy; return; }
+    f.x += (f.hx-f.x)*k; f.y += (f.hy-f.y)*k;
+  });
+  G.flies.forEach(f=>draw(f,t));
+  G.raf = requestAnimationFrame(tick);
+}
+function slotAt(cx,cy){
+  return [...sentText.querySelectorAll('.slot:not(.filled):not(.shown)')].find(s=>{ const r=s.getBoundingClientRect(); return cx>=r.left-14&&cx<=r.right+14&&cy>=r.top-18&&cy<=r.bottom+18; });
+}
+function bindDrag(f){
+  let ox=0, oy=0, sx=0, sy=0, moved=false, over=null;
+  f.el.addEventListener('pointerdown', e=>{
+    if(G.solved) return;
+    const fr=field.getBoundingClientRect();
+    f.drag=true; moved=false; sx=e.clientX; sy=e.clientY; ox=e.clientX-fr.left-f.x; oy=e.clientY-fr.top-f.y;
+    f.el.classList.add('dragging'); f.el.setPointerCapture(e.pointerId); e.preventDefault();
+  });
+  f.el.addEventListener('pointermove', e=>{
+    if(!f.drag) return;
+    const fr=field.getBoundingClientRect();
+    if(Math.hypot(e.clientX-sx,e.clientY-sy)>6) moved=true;
+    f.x=e.clientX-fr.left-ox; f.y=e.clientY-fr.top-oy;
+    const s=slotAt(e.clientX,e.clientY); if(s!==over){ over&&over.classList.remove('over'); over=s; over&&over.classList.add('over'); }
+    if(reduceMotion) draw(f,0);
+  });
+  const end = e=>{
+    if(!f.drag) return;
+    f.drag=false; f.el.classList.remove('dragging'); over&&over.classList.remove('over');
+    const slot = moved ? slotAt(e.clientX,e.clientY) : sentText.querySelector('.slot:not(.filled):not(.shown)');
+    over=null;
+    if(slot) place(f, slot); else bounceBack(f);
+  };
+  f.el.addEventListener('pointerup', end); f.el.addEventListener('pointercancel', end);
+}
+function bounceBack(f){ if(reduceMotion){ f.x=f.hx; f.y=f.hy; draw(f,0); } }
+
+function place(f, slot){
+  if(fits(f.word, slot)){
+    slot.textContent=f.word; slot.classList.add('filled');
+    f.gone=true; f.el.classList.add('pop'); setTimeout(()=>f.el.remove(),260); G.flies=G.flies.filter(x=>x!==f);
+    if(!sentText.querySelector('.slot:not(.filled):not(.shown)')) solve(true);
+    else setMsg('Есть! Ещё пропуск','open');
+  } else {
+    G.mist++; updateTop(); play('bad');
+    slot.classList.remove('wrong'); void slot.offsetWidth; slot.classList.add('wrong');
+    setTimeout(()=>slot.classList.remove('wrong'),450);
+    setMsg('Не подходит, попробуй другое','sleepy');
+    bounceBack(f);
+  }
+}
+function solve(byPlayer){
+  G.solved=true; sent.classList.add('done');
+  if(byPlayer){ G.done++; addToSet('st-gaps', G.order[G.idx]); play('ok'); }
+  updateTop();
+  setMsg(byPlayer ? 'Верно! Мур.' : 'Запомни и иди дальше', byPlayer?'happy':'open');
+  document.getElementById('gp-next').hidden=false; document.getElementById('gp-skip').hidden=true; document.getElementById('gp-hint').hidden=true;
+  G.flies.forEach(f=>{ f.leaving=true; f.vx = (f.side? 1:-1)*420; f.vy=0; });
+  setTimeout(clearFlies, reduceMotion?0:900);
+  if(G.mode==='timed'){ document.getElementById('gp-next').hidden=true; setTimeout(()=>{ if(G.mode==='timed' && !G.ended && G.solved){ G.idx++; showSentence(); } }, 600); return; }
+  document.getElementById('gp-next').focus({preventScroll:true});
+}
+function finish(){
+  clearFlies(); sent.classList.add('done'); G.ended=true;
+  const m=G.mist, mood = m===0?'happy': m<=5?'open':'sleepy';
+  sentText.innerHTML = `<div class="finish"><strong>Все ${GAPS.length} утверждений пройдены!</strong>${m===0?'Без единой ошибки. Кот в восторге.':`Ошибок: ${m}. Сыграй ещё раз, чтобы закрепить.`}</div>`;
+  setMsg('Можно начать заново','happy'); updateTop(); play('win');
+  document.getElementById('gp-hint').hidden=true; document.getElementById('gp-skip').hidden=true;
+  const nx=document.getElementById('gp-next'); nx.hidden=false; nx.textContent='Ещё раз';
+}
+document.getElementById('gp-next').onclick = ()=>{
+  const nx=document.getElementById('gp-next');
+  if(G.ended || (G.mode==='calm' && G.idx>=GAPS.length)){ newGame(); return; }
+  G.idx++; showSentence();
+};
+document.getElementById('gp-skip').onclick = ()=>{
+  if(G.mode==='timed'){ if(!G.ended){ G.idx++; showSentence(); } return; }
+  G.mist++; sentText.querySelectorAll('.slot:not(.filled)').forEach(s=>{ s.textContent=s.dataset.ans.split('|')[0]; s.classList.add('shown'); });
+  solve(false);
+};
+document.getElementById('gp-hint').onclick = ()=>{
+  const s=sentText.querySelector('.slot:not(.filled):not(.shown)'); if(!s) return;
+  const f=G.flies.find(f=>fits(f.word,s)); if(!f) return;
+  f.el.classList.add('glow'); setTimeout(()=>f.el.classList.remove('glow'),1600);
+};
+window.addEventListener('resize', ()=>{ if(!G.started || field.clientWidth===0) return; zones(); layoutHomes(); if(reduceMotion) placeStatic(); });
+function gameShow(){
+  if(!G.started){ G.started=true; newGame(); } else { zones(); layoutHomes(); }
+  if(G.paused){ G.paused=false; if(G.mode==='timed' && !G.ended) startTimer(); }
+  cancelAnimationFrame(G.raf); G.last=0; G.raf=requestAnimationFrame(tick);
+}
+function gameHide(){ cancelAnimationFrame(G.raf); if(G.tmr){ stopTimer(); G.paused=true; } }
+
+/* ---- cartoon cat chasing a yarn ball ---- */
+const PET = { ready:false, trail:[], puffT:0 };
+const BAMS = ['БАЦ!','ХЛОП!','МЯУ!','ДЗЫНЬ!','ОП!'];
+let petLayer=null;
+function petBounds(r){
+  const W=petLayer.clientWidth;
+  return { x0:r, x1:W-r, y0:56, y1:Math.max(58, 112-r) };
+}
+function cardBox(){
+  const fr=field.getBoundingClientRect(), cr=sent.getBoundingClientRect();
+  return { l:cr.left-fr.left, t:cr.top-fr.top, r:cr.right-fr.left, b:cr.bottom-fr.top };
+}
+/* keep a round body out of the statement card: push out along the shallowest side */
+function avoidCard(o, rad, bounce){
+  const c=cardBox(), l=c.l-rad, t=c.t-rad, r=c.r+rad, b=c.b+rad;
+  if(o.x<=l||o.x>=r||o.y<=t||o.y>=b) return false;
+  const pen=[[o.x-l,'l'],[r-o.x,'r'],[o.y-t,'t'],[b-o.y,'b']].sort((a,b)=>a[0]-b[0])[0][1];
+  if(pen==='l'){ o.x=l; o.vx = bounce ? -Math.abs(o.vx)*.8 : Math.min(0,o.vx); }
+  if(pen==='r'){ o.x=r; o.vx = bounce ?  Math.abs(o.vx)*.8 : Math.max(0,o.vx); }
+  if(pen==='t'){ o.y=t; o.vy = bounce ? -Math.abs(o.vy)*.8 : Math.min(0,o.vy); }
+  if(pen==='b'){ o.y=b; o.vy = bounce ?  Math.abs(o.vy)*.8 : Math.max(0,o.vy); }
+  return true;
+}
+function mk(cls, html){ const d=document.createElement('div'); d.className=cls; if(html) d.innerHTML=html; petLayer.appendChild(d); return d; }
+function petsInit(){
+  if(PET.ready || reduceMotion) return;
+  PET.ready = true;
+  petLayer=document.createElement('div'); petLayer.className='petlayer'; petLayer.setAttribute('aria-hidden','true'); document.querySelector('.floor').appendChild(petLayer);
+  const th = document.createElementNS('http://www.w3.org/2000/svg','svg'); th.setAttribute('class','thread'); th.innerHTML='<polyline points=""/>'; petLayer.appendChild(th);
+  PET.line = th.firstChild;
+  const cs = mk('shadow'), bs = mk('shadow');
+  const k = mk('pet kitty', `<svg viewBox="0 0 112 92" aria-hidden="true">
+  <g class="tail"><path d="M30 60 C10 62 2 44 10 26" stroke="#1D1B1E" stroke-width="13" fill="none" stroke-linecap="round"/><path d="M30 60 C10 62 2 44 10 26" stroke="#E39A4E" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M12 36 L8 30" stroke="#B9692B" stroke-width="3" stroke-linecap="round"/><path d="M14 48 L8 46" stroke="#B9692B" stroke-width="3" stroke-linecap="round"/><circle cx="10" cy="26" r="4" fill="#FBF0DE"/></g>
+  <g class="leg lb"><path d="M34 64 L34 80" stroke="#1D1B1E" stroke-width="12" stroke-linecap="round"/><path d="M34 64 L34 80" stroke="#C97F3A" stroke-width="7" stroke-linecap="round"/></g>
+  <g class="leg la"><path d="M62 64 L62 80" stroke="#1D1B1E" stroke-width="12" stroke-linecap="round"/><path d="M62 64 L62 80" stroke="#C97F3A" stroke-width="7" stroke-linecap="round"/></g>
+  <ellipse cx="48" cy="60" rx="26" ry="16" fill="#E39A4E" stroke="#1D1B1E" stroke-width="2.6"/>
+  <ellipse cx="50" cy="68" rx="15" ry="6" fill="#FBF0DE"/>
+  <g stroke="#B9692B" stroke-width="3.2" fill="none" stroke-linecap="round"><path d="M36 46 Q39 52 35 57"/><path d="M47 45 Q50 52 46 57"/></g>
+  <g class="leg la"><path d="M40 66 L40 82" stroke="#1D1B1E" stroke-width="12" stroke-linecap="round"/><path d="M40 66 L40 82" stroke="#E39A4E" stroke-width="7" stroke-linecap="round"/><ellipse cx="41" cy="83" rx="6" ry="4" fill="#FBF0DE" stroke="#1D1B1E" stroke-width="2"/></g>
+  <g class="leg lb"><path d="M66 64 L66 82" stroke="#1D1B1E" stroke-width="12" stroke-linecap="round"/><path d="M66 64 L66 82" stroke="#E39A4E" stroke-width="7" stroke-linecap="round"/><ellipse cx="67" cy="83" rx="6" ry="4" fill="#FBF0DE" stroke="#1D1B1E" stroke-width="2"/></g>
+  <g class="ear"><path d="M62 24 L58 2 L78 15Z" fill="#E39A4E" stroke="#1D1B1E" stroke-width="2.6" stroke-linejoin="round"/><path d="M63 18 L61 8 L71 15Z" fill="#F3C4E3"/></g>
+  <g class="ear"><path d="M88 15 L104 3 L104 26Z" fill="#E39A4E" stroke="#1D1B1E" stroke-width="2.6" stroke-linejoin="round"/><path d="M93 14 L101 8 L101 19Z" fill="#F3C4E3"/></g>
+  <circle cx="82" cy="38" r="25" fill="#E39A4E" stroke="#1D1B1E" stroke-width="2.6"/>
+  <path d="M70 16 Q73 22 70 27 M80 14 Q82 20 80 25" stroke="#B9692B" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <ellipse cx="90" cy="48" rx="13" ry="9" fill="#FBF0DE"/>
+  <ellipse cx="76" cy="36" rx="7" ry="8.5" fill="#fff" stroke="#1D1B1E" stroke-width="2"/>
+  <ellipse cx="94" cy="36" rx="7" ry="8.5" fill="#fff" stroke="#1D1B1E" stroke-width="2"/>
+  <g class="pupils"><ellipse cx="77" cy="37" rx="4.4" ry="6" fill="#1D1B1E"/><ellipse cx="95" cy="37" rx="4.4" ry="6" fill="#1D1B1E"/><circle cx="79" cy="34" r="1.8" fill="#fff"/><circle cx="97" cy="34" r="1.8" fill="#fff"/></g>
+  <ellipse cx="69" cy="48" rx="5" ry="3" fill="#F3A6D0" opacity=".75"/><ellipse cx="102" cy="47" rx="4" ry="3" fill="#F3A6D0" opacity=".75"/>
+  <path d="M88.5 44 L93.5 44 L91 47Z" fill="#DE8BC0" stroke="#1D1B1E" stroke-width="1.2" stroke-linejoin="round"/>
+  <path d="M86 49 Q88.5 52 91 49 Q93.5 52 96 49" stroke="#1D1B1E" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <g stroke="#1D1B1E" stroke-width="1.3" stroke-linecap="round"><path d="M100 48 L111 45"/><path d="M100 51 L110 53"/></g>
+</svg>`);
+  const y = mk('pet yarn', `<svg viewBox="0 0 40 40" aria-hidden="true">
+  <circle cx="20" cy="20" r="17" fill="#DE8BC0" stroke="#1D1B1E" stroke-width="2.6"/>
+  <g stroke="#FBF6EA" stroke-width="1.8" fill="none" opacity=".9" stroke-linecap="round">
+    <path d="M7 13 Q20 22 33 11"/><path d="M5 22 Q20 31 35 20"/><path d="M11 33 Q15 18 26 5"/><path d="M20 36 Q27 22 35 15"/>
+  </g>
+  <ellipse cx="13" cy="12" rx="4" ry="2.5" fill="#fff" opacity=".7" transform="rotate(-35 13 12)"/>
+</svg>`);
+  const b = petBounds(24);
+  PET.cat = { el:k, sh:cs, pup:k.querySelector('.pupils'), x:b.x0+40, y:b.y1-20, vx:0, vy:0, dir:1, cool:1, state:'chase', t:0, ph:0, jump:0, sx:1, sy:1, lean:0 };
+  PET.ball = { el:y, sh:bs, svg:y.firstElementChild, x:b.x1-30, y:b.y1-30, vx:80, vy:-20, rot:0, r:16, sq:0, hop:0 };
+  requestAnimationFrame(petLoop);
+}
+function petLoop(t){ const dt=Math.min(.05,(t-(PET.last||t))/1000); PET.last=t; petsTick(dt); requestAnimationFrame(petLoop); }
+function kick(ball, ang, sp){ ball.vx=Math.cos(ang)*sp; ball.vy=Math.sin(ang)*sp; ball.sq=1; ball.hop=1; }
+function bam(x,y){
+  const w = BAMS[Math.random()*BAMS.length|0];
+  const pts=[]; for(let i=0;i<20;i++){ const a=i/20*6.283, r=i%2?24:36; pts.push((48+Math.cos(a)*r*1.25).toFixed(1)+','+(36+Math.sin(a)*r).toFixed(1)); }
+  const d = mk('bam', `<svg viewBox="0 0 96 72"><polygon points="${pts.join(' ')}" fill="#FCF1C2" stroke="#1D1B1E" stroke-width="2.6" stroke-linejoin="round"/><text x="48" y="37">${w}</text></svg>`);
+  d.style.left=x+'px'; d.style.top=y+'px';
+  d.addEventListener('animationend', ()=>d.remove());
+}
+function puff(x,y){ const d=mk('puff'); d.style.left=x+'px'; d.style.top=y+'px'; d.addEventListener('animationend',()=>d.remove()); }
+function pushFlies(cx, cy, R, power){
+  const now = performance.now();
+  G.flies.forEach(f=>{
+    if(f.drag||f.leaving||f.enter||f.gone) return;
+    const px=Math.max(f.x,Math.min(cx,f.x+f.w)), py=Math.max(f.y,Math.min(cy,f.y+f.h));
+    let dx=px-cx, dy=py-cy, d=Math.hypot(dx,dy);
+    if(d>=R) return;
+    if(d<0.01){ dx=(f.x+f.w/2)-cx; dy=(f.y+f.h/2)-cy; d=Math.hypot(dx,dy)||1; }
+    const nx=dx/d, ny=dy/d;
+    f.x+=nx*(R-d)*.06; f.y+=ny*(R-d)*.06;
+    f.vx=f.vx*.7+nx*power*.3; f.vy=f.vy*.7+ny*power*.3;
+    if(!f.boingT || now-f.boingT>1200){ f.boingT=now; f.el.classList.remove('boing'); void f.el.offsetWidth; f.el.classList.add('boing'); }
+  });
+}
+function petsTick(dt){
+  if(!PET.ready || !petLayer.clientWidth) return;
+  const ball=PET.ball, cat=PET.cat;
+  /* yarn: rolls, slows down, squashes on the walls, hops when hit */
+  const bb=petBounds(ball.r);
+  ball.x+=ball.vx*dt; ball.y+=ball.vy*dt;
+  let hit=false;
+  if(ball.x<bb.x0){ball.x=bb.x0;ball.vx=Math.abs(ball.vx)*.8;hit=true} if(ball.x>bb.x1){ball.x=bb.x1;ball.vx=-Math.abs(ball.vx)*.8;hit=true}
+  if(ball.y<bb.y0){ball.y=bb.y0;ball.vy=Math.abs(ball.vy)*.8;hit=true} if(ball.y>bb.y1){ball.y=bb.y1;ball.vy=-Math.abs(ball.vy)*.8;hit=true}
+  if(hit && Math.hypot(ball.vx,ball.vy)>60) ball.sq=1;
+  const bsp=Math.hypot(ball.vx,ball.vy), fr=Math.max(0,bsp-75*dt);
+  if(bsp>0){ ball.vx*=fr/bsp; ball.vy*=fr/bsp; }
+  ball.rot += (ball.vx>=0?1:-1)*fr*dt/ball.r*57.3;
+  ball.sq=Math.max(0,ball.sq-dt*4); ball.hop=Math.max(0,ball.hop-dt*2.2);
+  const hopY = Math.sin(ball.hop*Math.PI)*22;
+  /* thread trail */
+  const last=PET.trail[PET.trail.length-1];
+  if(!last || Math.hypot(last[0]-ball.x,last[1]-ball.y)>10){ PET.trail.push([ball.x,ball.y]); if(PET.trail.length>34) PET.trail.shift(); PET.line.setAttribute('points', PET.trail.map(p=>p[0].toFixed(0)+','+p[1].toFixed(0)).join(' ')); }
+
+  /* cat: chase -> crouch (wiggle) -> leap -> swat */
+  const cb=petBounds(44);
+  const dx=ball.x-cat.x, dy=ball.y-cat.y, d=Math.hypot(dx,dy)||1;
+  cat.cool=Math.max(0,cat.cool-dt); cat.t-=dt;
+  let tsx=1, tsy=1, lean=0;
+  if(cat.state==='chase'){
+    const busy = G.flies.some(f=>f.drag);
+    const want = busy ? 0 : (d>60 ? Math.min(85, 30+d*.5) : 0);
+    const k=Math.min(1,dt*4); cat.vx+=(dx/d*want-cat.vx)*k; cat.vy+=(dy/d*want-cat.vy)*k;
+    if(d<110 && cat.cool===0 && !busy){ cat.state='crouch'; cat.t=.6; }
+    const sp=Math.hypot(cat.vx,cat.vy); lean = Math.min(10, sp/20);
+  } else if(cat.state==='crouch'){
+    cat.vx*=.8; cat.vy*=.8; tsx=1.2; tsy=.75; lean=-4 + Math.sin(performance.now()/30)*4;
+    if(cat.t<=0){ cat.state='leap'; cat.t=.5; const lead=.25; const tx=ball.x+ball.vx*lead-cat.x, ty=ball.y+ball.vy*lead-cat.y, td=Math.hypot(tx,ty)||1; const v=Math.min(170, td/.5); cat.vx=tx/td*v; cat.vy=ty/td*v; }
+  } else if(cat.state==='leap'){
+    const p=1-cat.t/.5; cat.jump=Math.sin(Math.max(0,Math.min(1,p))*Math.PI)*34; tsx=.88; tsy=1.18; lean = p<.5 ? -14 : 12;
+    if(d<46){ kick(ball, Math.atan2(dy,dx)+(Math.random()-.5)*1.4, 120+Math.random()*60); cat.state='land'; cat.t=.25; cat.cool=2.8; }
+    else if(cat.t<=0){ cat.state='land'; cat.t=.25; cat.cool=1.5; }
+  } else if(cat.state==='land'){
+    cat.jump=0; cat.vx*=.85; cat.vy*=.85; tsx=1.22; tsy=.78;
+    if(cat.t<=0) cat.state='chase';
+  }
+  if(cat.state!=='leap') cat.jump=Math.max(0,cat.jump-dt*200);
+  cat.x=Math.max(cb.x0,Math.min(cb.x1,cat.x+cat.vx*dt)); cat.y=Math.max(cb.y0,Math.min(cb.y1,cat.y+cat.vy*dt));
+  if(Math.abs(cat.vx)>10 && cat.state!=='crouch') cat.dir = cat.vx>0?1:-1;
+  const speed=Math.hypot(cat.vx,cat.vy), running = cat.state==='chase' && speed>25;
+  cat.el.classList.toggle('run', running);
+  cat.ph += dt*speed/9;
+  const bob = running ? Math.abs(Math.sin(cat.ph))*7 : 0;
+  if(running){ tsy *= 1 + Math.cos(cat.ph*2)*.05; tsx *= 1 - Math.cos(cat.ph*2)*.04; }
+  const k2=Math.min(1,dt*14); cat.sx+=(tsx-cat.sx)*k2; cat.sy+=(tsy-cat.sy)*k2; cat.lean+=(lean-cat.lean)*k2;
+  /* dust puffs while running */
+  PET.puffT-=dt; if(running && speed>55 && PET.puffT<=0){ PET.puffT=.18; puff(cat.x-cat.dir*26, cat.y+19); }
+  /* eyes follow the yarn */
+  const ex=Math.max(-2.5,Math.min(2.5, dx*cat.dir/40)), ey=Math.max(-2,Math.min(2.5, dy/40));
+  cat.pup.setAttribute('transform', `translate(${ex.toFixed(1)} ${ey.toFixed(1)})`);
+  /* both shove the floating words */
+  /* draw */
+  cat.el.style.transform=`translate(${(cat.x-41).toFixed(1)}px,${(cat.y-46-cat.jump-bob).toFixed(1)}px) rotate(${(cat.lean*-cat.dir).toFixed(1)}deg) scale(${(cat.sx*cat.dir).toFixed(3)},${cat.sy.toFixed(3)})`;
+  const cs=1-cat.jump/90; cat.sh.style.cssText=`width:58px;height:11px;transform:translate(${(cat.x-29).toFixed(1)}px,${(cat.y+15).toFixed(1)}px) scale(${cs.toFixed(2)})`;
+  const sq=ball.sq*.28; ball.el.style.transform=`translate(${(ball.x-16).toFixed(1)}px,${(ball.y-16-hopY).toFixed(1)}px) scale(${(1+sq).toFixed(3)},${(1-sq).toFixed(3)})`;
+  ball.svg.style.transform=`rotate(${ball.rot.toFixed(1)}deg)`;
+  const bsh=1-hopY/60; ball.sh.style.cssText=`width:28px;height:8px;transform:translate(${(ball.x-14).toFixed(1)}px,${(ball.y+12).toFixed(1)}px) scale(${bsh.toFixed(2)})`;
+}
+try{ document.fonts.ready.then(()=>{ G.flies.forEach(f=>{ f.w=f.el.offsetWidth; f.h=f.el.offsetHeight; }); if(G.started && field.clientWidth){ zones(); layoutHomes(); } }); document.fonts.addEventListener('loadingdone', ()=>{ if(G.started && field.clientWidth){ zones(); layoutHomes(); } }); }catch(e){}
+
+
+/* ---------- flashcards ---------- */
+const CARDS = [
+  ['Аксиома','t-ax','Сколько плоскостей проходит через три точки, не лежащие на одной прямой?','Одна, и притом только одна.'],
+  ['Аксиома','t-ax','Что следует, если две точки прямой лежат в плоскости?','Все точки этой прямой лежат в этой плоскости.'],
+  ['Аксиома','t-ax','Две плоскости имеют общую точку. Что можно сказать?','Они имеют общую прямую, на которой лежат все общие точки этих плоскостей.'],
+  ['Следствие','t-cor','Сколько плоскостей проходит через прямую и точку, не лежащую на ней?','Одна, и притом только одна.'],
+  ['Следствие','t-cor','Сколько плоскостей проходит через две пересекающиеся прямые?','Одна, и притом только одна.'],
+  ['Определение','t-def','Какие прямые называют параллельными?','Две прямые, которые лежат в одной плоскости и не пересекаются.'],
+  ['Определение','t-def','Какие прямые называют скрещивающимися?','Две прямые, которые не лежат в одной плоскости.'],
+  ['Признак','t-sign','Признак скрещивающихся прямых','Если одна прямая лежит в плоскости, а другая пересекает эту плоскость в точке, не лежащей на первой прямой, то эти прямые скрещивающиеся.'],
+  ['Определение','t-def','Какие прямые называют пересекающимися?','Две различные прямые, которые имеют общую точку и лежат в одной плоскости.'],
+  ['Определение','t-def','Какие прямые в пространстве перпендикулярны?','Пересекающиеся или скрещивающиеся прямые, угол между которыми равен 90°. Обозначение: a ⊥ b.'],
+  ['Определение','t-def','Назови три случая расположения прямой и плоскости','1) прямая лежит в плоскости; 2) пересекаются — одна общая точка; 3) параллельны — нет общих точек.'],
+  ['Признак','t-sign','Признак параллельности прямой и плоскости','Если прямая, не лежащая в плоскости, параллельна какой-нибудь прямой этой плоскости, то она параллельна данной плоскости.'],
+  ['Свойство','t-prop','Плоскость проходит через прямую, параллельную другой плоскости, и пересекает её. Что известно о линии пересечения?','Линия пересечения плоскостей параллельна данной прямой.'],
+  ['Определение','t-def','Когда прямая перпендикулярна плоскости?','Когда она перпендикулярна к любой прямой, лежащей в этой плоскости.'],
+  ['Признак','t-sign','Признак перпендикулярности прямой и плоскости','Если прямая перпендикулярна к двум пересекающимся прямым, лежащим в плоскости, то она перпендикулярна этой плоскости.'],
+  ['Свойство','t-prop','Что можно сказать о двух прямых, перпендикулярных одной плоскости?','Они параллельны.'],
+  ['Определение','t-def','Что такое наклонная к плоскости?','Отрезок, соединяющий точку A вне плоскости с точкой M плоскости и не совпадающий с перпендикуляром из точки A. Точка M — основание наклонной.'],
+  ['Теорема','t-thm','Теорема о трёх перпендикулярах','Прямая, проведённая в плоскости через основание наклонной перпендикулярно к её проекции, перпендикулярна и к самой наклонной.'],
+  ['Теорема','t-thm','Обратная теорема о трёх перпендикулярах','Прямая, проведённая в плоскости через основание наклонной перпендикулярно к ней, перпендикулярна и к её проекции.'],
+  ['Признак','t-sign','Признак параллельности двух плоскостей','Если две пересекающиеся прямые одной плоскости соответственно параллельны двум прямым другой плоскости, то плоскости параллельны.'],
+  ['Свойство','t-prop','Свойства параллельных плоскостей','1) Если их пересекает третья плоскость, линии пересечения параллельны. 2) Отрезки параллельных прямых между ними равны.'],
+  ['Признак','t-sign','Признак перпендикулярности плоскостей','Если одна из плоскостей проходит через прямую, перпендикулярную другой плоскости, то плоскости перпендикулярны.'],
+  ['Свойство','t-prop','Плоскость перпендикулярна линии пересечения двух плоскостей. Что следует?','Она перпендикулярна каждой из этих двух плоскостей.']
+];
+let marks = store.get('stereo-marks', {});   // idx -> 'k' | 'a'
+let order = CARDS.map((_,i)=>i), pos = 0, reviewMode = false;
+const fc = document.getElementById('fc');
+function deck(){ return reviewMode ? order.filter(i=>marks[i]==='a') : order; }
+function renderCard(){
+  const d = deck();
+  fc.classList.remove('flipped');
+  if(!d.length){
+    document.getElementById('fc-kind').textContent='Готово'; document.getElementById('fc-kind').className='tag t-ax';
+    document.getElementById('fc-q').textContent='Отложенных карточек не осталось!';
+    document.getElementById('fc-a').textContent='Выключи режим «повторить», чтобы пройти всю колоду.';
+    document.getElementById('fc-count').textContent='0 / 0';
+  } else {
+    if(pos>=d.length) pos=0; if(pos<0) pos=d.length-1;
+    const [kind,cls,q,a] = CARDS[d[pos]];
+    const k = document.getElementById('fc-kind'); k.textContent = kind; k.className = 'tag '+cls;
+    document.getElementById('fc-q').textContent = q;
+    document.getElementById('fc-a').textContent = a;
+    document.getElementById('fc-count').textContent = `${pos+1} / ${d.length}`;
+  }
+  document.getElementById('fc-bar').style.width = d.length ? ((pos+1)/d.length*100)+'%' : '0';
+  const known = Object.values(marks).filter(v=>v==='k').length, again = Object.values(marks).filter(v=>v==='a').length;
+  document.getElementById('st-know').textContent = known;
+  document.getElementById('st-again').textContent = again;
+  document.getElementById('st-all').textContent = CARDS.length;
+  document.getElementById('fc-mode').textContent = reviewMode ? 'только «повторить»' : 'все карточки';
+  document.getElementById('fc-review').textContent = reviewMode ? 'Вся колода' : `Только «повторить» (${again})`;
+  const mood = known===CARDS.length ? 'happy' : known>=CARDS.length/2 ? 'open' : 'sleepy';
+  document.getElementById('fc-cat').innerHTML = catSvg(mood) + (known===CARDS.length ? '<p class="done-msg">Всю колоду знаешь!</p>' : '');
+}
+fc.onclick = ()=> { fc.classList.toggle('flipped'); play('flip'); };
+function markCard(v){ const d=deck(); if(!d.length) return; marks[d[pos]] = v; store.set('stereo-marks', marks); renderYarns(); play(v==='k'?'ok':'flip'); if(!(reviewMode && v==='k')) pos++; renderCard(); }
+document.getElementById('fc-know').onclick = ()=> markCard('k');
+document.getElementById('fc-again').onclick = ()=> markCard('a');
+document.getElementById('fc-next').onclick = ()=> { pos++; renderCard(); };
+document.getElementById('fc-prev').onclick = ()=> { pos--; renderCard(); };
+document.getElementById('fc-shuffle').onclick = ()=> { order = order.slice().sort(()=>Math.random()-.5); pos=0; renderCard(); };
+document.getElementById('fc-review').onclick = ()=> { reviewMode=!reviewMode; pos=0; renderCard(); };
+document.getElementById('fc-clear').onclick = ()=> { marks={}; store.set('stereo-marks', marks); renderYarns(); reviewMode=false; pos=0; renderCard(); };
+document.addEventListener('keydown', e=>{
+  if(document.getElementById('view-kartochki').hidden || e.target.tagName==='INPUT') return;
+  if(e.key==='ArrowRight'){ pos++; renderCard(); } else if(e.key==='ArrowLeft'){ pos--; renderCard(); }
+});
+renderCard();
+
+/* ---------- tasks ---------- */
+const TASKS = [
+  { id:'t1', lvl:'легко', hint:'Посмотри на треугольник AHM. Какой у него угол при вершине H и почему?', name:'Перпендикуляр и наклонная', fig:'p1',
+    cond:'Из точки A к плоскости α проведены перпендикуляр AH и наклонная AM. AH = 6, AM = 10. Найдите длину проекции наклонной HM.',
+    dano:['AH ⊥ α','AM — наклонная','AH = 6, AM = 10'], najti:'HM',
+    steps:[
+      ['AH ⊥ α, значит AH перпендикулярна любой прямой плоскости α, в том числе прямой HM.','определение перпендикулярности прямой и плоскости'],
+      ['Треугольник AHM прямоугольный: ∠AHM = 90°, AM — гипотенуза.','поэтому можно применить теорему Пифагора'],
+      ['HM² = AM² − AH² = 10² − 6² = 100 − 36 = 64.','теорема Пифагора'],
+      ['HM = √64 = 8.','длина отрезка положительна']
+    ], answer:8, unit:'' },
+  { id:'t2', lvl:'средне', hint:'Найди проекцию наклонной SD на плоскость квадрата. Что можно сказать о ней и прямой CD?', name:'Теорема о трёх перпендикулярах', fig:'p2',
+    cond:'ABCD — квадрат со стороной 3. Отрезок SA перпендикулярен плоскости квадрата, SA = 4. Найдите расстояние от точки S до прямой CD.',
+    dano:['ABCD — квадрат, AB = 3','SA ⊥ (ABC), SA = 4'], najti:'ρ(S; CD)',
+    steps:[
+      ['SD — наклонная к плоскости квадрата, AD — её проекция на эту плоскость.','так как SA ⊥ (ABC), A — основание перпендикуляра'],
+      ['CD проходит через основание наклонной D и CD ⊥ AD.','стороны квадрата перпендикулярны'],
+      ['Значит, CD ⊥ SD, и расстояние от S до прямой CD равно длине SD.','теорема о трёх перпендикулярах'],
+      ['В прямоугольном треугольнике SAD: SD² = SA² + AD² = 16 + 9 = 25.','теорема Пифагора, ∠SAD = 90°'],
+      ['SD = 5.','ответ: расстояние равно 5']
+    ], answer:5, unit:'' },
+  { id:'t3', lvl:'сложно', hint:'Обозначь меньшую проекцию через x и запиши MH² двумя способами, из двух треугольников.', name:'Две наклонные', fig:'p3',
+    cond:'Из точки M к плоскости α проведены две наклонные MA = 10 и MB = 17. Их проекции на плоскость отличаются на 9. Найдите расстояние от точки M до плоскости α.',
+    dano:['MH ⊥ α','MA = 10, MB = 17','HB − HA = 9'], najti:'MH',
+    steps:[
+      ['HA и HB — проекции наклонных. Пусть HA = x, тогда HB = x + 9.','большей наклонной соответствует большая проекция'],
+      ['Треугольники MHA и MHB прямоугольные, MH — общий катет: MH² = 10² − x² и MH² = 17² − (x + 9)².','теорема Пифагора дважды'],
+      ['100 − x² = 289 − x² − 18x − 81, откуда 18x = 108, x = 6.','приравниваем выражения для MH²'],
+      ['MH² = 100 − 36 = 64, MH = 8.','проверка: HB = 15, 15² + 8² = 289 = 17² ✓']
+    ], answer:8, unit:'' },
+  { id:'t4', lvl:'легко', hint:'Сначала найди общий катет MH из треугольника MHA.', name:'Общий перпендикуляр', fig:'p4',
+    cond:'Из точки M к плоскости α проведены наклонные MA = 13 и MB = 20. Проекция наклонной MA равна 5. Найдите проекцию наклонной MB.',
+    dano:['MH ⊥ α','MA = 13, MB = 20','HA = 5'], najti:'HB',
+    steps:[
+      ['Треугольник MHA прямоугольный: MH² = MA² − HA² = 169 − 25 = 144, MH = 12.','MH ⊥ α, значит MH ⊥ HA'],
+      ['Треугольник MHB тоже прямоугольный с тем же катетом MH.','MH ⊥ HB по определению перпендикуляра к плоскости'],
+      ['HB² = MB² − MH² = 400 − 144 = 256, HB = 16.','теорема Пифагора']
+    ], answer:16 },
+  { id:'t5', lvl:'средне', hint:'Опусти перпендикуляры из A, M и B. Как они расположены друг относительно друга и какая фигура получилась?', name:'Середина отрезка', fig:'p5',
+    cond:'Отрезок AB не пересекает плоскость α. Его концы удалены от плоскости на 3 и 7. Найдите расстояние от середины M отрезка AB до плоскости α.',
+    dano:['AA₁ ⊥ α, BB₁ ⊥ α, MM₁ ⊥ α','AA₁ = 3, BB₁ = 7','AM = MB'], najti:'MM₁',
+    steps:[
+      ['AA₁, MM₁ и BB₁ перпендикулярны одной плоскости, значит они параллельны.','две прямые, перпендикулярные одной плоскости, параллельны'],
+      ['Значит, AA₁B₁B — трапеция с основаниями AA₁ и BB₁.','параллельные прямые лежат в одной плоскости'],
+      ['MM₁ проходит через середину боковой стороны AB параллельно основаниям, поэтому это средняя линия трапеции.','теорема Фалеса: M₁ — середина A₁B₁'],
+      ['MM₁ = (3 + 7) : 2 = 5.','средняя линия равна полусумме оснований']
+    ], answer:5 },
+  { id:'t6', lvl:'средне', hint:'Лучи OA₁ и OB₁ задают плоскость. По каким прямым она пересекает α и β и как эти прямые расположены?', name:'Параллельные плоскости', fig:'p6',
+    cond:'Плоскости α и β параллельны. Из точки O проведены два луча: первый пересекает α в точке A, а β в точке A₁; второй пересекает α в точке B, а β в точке B₁. OA = 4, AA₁ = 6, AB = 5. Найдите A₁B₁.',
+    dano:['α ∥ β','OA = 4, AA₁ = 6','AB = 5'], najti:'A₁B₁',
+    steps:[
+      ['Лучи OA₁ и OB₁ пересекаются, поэтому через них проходит плоскость OA₁B₁.','следствие: через две пересекающиеся прямые проходит одна плоскость'],
+      ['Эта плоскость пересекает α по прямой AB, а β по прямой A₁B₁, значит AB ∥ A₁B₁.','свойство параллельных плоскостей'],
+      ['Треугольники OAB и OA₁B₁ подобны, коэффициент k = OA₁ : OA = 10 : 4 = 2,5.','подобие по двум углам: AB ∥ A₁B₁'],
+      ['A₁B₁ = 5 · 2,5 = 12,5.','ответ можно записать как 12,5']
+    ], answer:12.5 },
+  { id:'t7', lvl:'средне', hint:'Посмотри на наклонную D₁C. Какая у неё проекция на нижнее основание и как эта проекция расположена относительно BC?', name:'Параллелепипед', fig:'p7',
+    cond:'В прямоугольном параллелепипеде ABCDA₁B₁C₁D₁ известно: DC = 6, DD₁ = 8. Найдите расстояние от точки D₁ до прямой BC.',
+    dano:['ABCDA₁B₁C₁D₁ — прям. параллелепипед','DC = 6, DD₁ = 8'], najti:'ρ(D₁; BC)',
+    steps:[
+      ['DD₁ ⊥ (ABC), поэтому D₁C — наклонная, а DC — её проекция на плоскость основания.','определение проекции наклонной'],
+      ['DC ⊥ BC, и прямая BC проходит через основание наклонной C.','ABCD — прямоугольник'],
+      ['Значит, D₁C ⊥ BC, и расстояние от D₁ до BC равно D₁C.','теорема о трёх перпендикулярах'],
+      ['D₁C² = DC² + DD₁² = 36 + 64 = 100, D₁C = 10.','теорема Пифагора в треугольнике D₁DC']
+    ], answer:10 },
+  { id:'t8', lvl:'сложно', hint:'Сначала найди AD в плоскости α. Потом подумай, какой угол между BD и AD.', name:'Перпендикулярные плоскости', fig:'p8',
+    cond:'Плоскости α и β перпендикулярны и пересекаются по прямой c. Точка A лежит в α, точка B лежит в β. AC ⊥ c и BD ⊥ c, где C и D — точки прямой c. AC = 3, BD = 4, CD = 12. Найдите AB.',
+    dano:['α ⊥ β, α ∩ β = c','AC ⊥ c, AC = 3','BD ⊥ c, BD = 4, CD = 12'], najti:'AB',
+    steps:[
+      ['В плоскости α: треугольник ACD прямоугольный, AD² = AC² + CD² = 9 + 144 = 153.','теорема Пифагора'],
+      ['BD лежит в β и перпендикулярна линии пересечения c, значит BD ⊥ α.','так как α ⊥ β'],
+      ['Тогда BD ⊥ AD, и треугольник ADB прямоугольный.','прямая, перпендикулярная плоскости, перпендикулярна любой прямой в ней'],
+      ['AB² = AD² + BD² = 153 + 16 = 169, AB = 13.','теорема Пифагора']
+    ], answer:13 }
+];
+let ti = 0, shown = 0;
+const tabsEl = document.getElementById('task-tabs'), taskEl = document.getElementById('task');
+function renderTaskTabs(){
+  const solved=store.get('st-tasks',[]);
+  tabsEl.innerHTML = TASKS.map((t,i)=>`<button class="chip" data-t="${i}" aria-pressed="${i===ti}">${solved.includes(t.id)?'<span class="ck">✓</span>':''}${t.name}<span class="lv">${t.lvl}</span></button>`).join('');
+  tabsEl.querySelectorAll('.chip').forEach(b=> b.onclick = ()=>{ ti=+b.dataset.t; shown=0; renderTaskTabs(); renderTask(); play('tick'); });
+}
+renderTaskTabs();
+function renderTask(){
+  const t = TASKS[ti];
+  taskEl.innerHTML = `<article class="task">
+    <div class="task-top">
+      <div>
+        <p class="cond">${t.cond}</p>
+        <div class="dano"><div class="l"><b>Дано:</b>${t.dano.map(d=>`<span>${d}</span>`).join('')}</div><div class="r"><b>Найти:</b><span style="font-weight:800">${t.najti}</span></div></div>
+      </div>
+      <figure class="fig">${FIG[t.fig]}</figure>
+    </div>
+    <div class="steps">
+      <h4>Решение</h4>
+      <div class="hintbox" id="hintbox" hidden><b>Намёк.</b> ${t.hint}</div>
+      <ol id="steps-list"></ol>
+      <div class="row" id="step-btns"></div>
+      <div class="answer">
+        <label for="ans-in">Мой ответ: ${t.najti} =</label>
+        <input id="ans-in" inputmode="decimal" autocomplete="off">
+        <button class="btn dark" id="ans-btn">Проверить ответ</button>
+        <span class="verdict" id="verdict" aria-live="polite"></span>
+      </div>
+    </div></article>`;
+  renderSteps();
+  const inp = document.getElementById('ans-in');
+  const check = ()=>{
+    const v = parseFloat(inp.value.replace(',','.').replace(/[^\d.\-]/g,''));
+    const out = document.getElementById('verdict');
+    if(isNaN(v)){ out.className='verdict bad'; out.textContent='Впиши число'; return; }
+    if(Math.abs(v-t.answer)<1e-6){ out.className='verdict ok'; out.textContent='Верно! Мур.'; play('ok'); const was=store.get('st-tasks',[]).includes(t.id); addToSet('st-tasks', t.id); if(!was) renderTaskTabs(); }
+    else { out.className='verdict bad'; out.textContent = document.getElementById('hintbox').hidden ? 'Пока нет. Попробуй намёк.' : 'Пока нет. Открой следующий шаг.'; play('bad'); }
+  };
+  document.getElementById('ans-btn').onclick = check;
+  inp.addEventListener('keydown', e=>{ if(e.key==='Enter') check(); });
+}
+function renderSteps(){
+  const t = TASKS[ti];
+  document.getElementById('steps-list').innerHTML = t.steps.slice(0,shown).map((s,i)=>`<li><span class="k">${i+1}</span><p>${s[0]}<span class="why">${s[1]}</span></p></li>`).join('');
+  const btns = document.getElementById('step-btns');
+  if(shown < t.steps.length){
+    const hb=document.getElementById('hintbox');
+    btns.innerHTML = (hb.hidden && shown===0 ? `<button class="btn" id="hint">Намекни</button>` : '') + `<button class="btn primary" id="nx">${shown===0?'Показать первый шаг':`Следующий шаг (${shown+1} из ${t.steps.length})`}</button><button class="btn" id="all">Всё решение</button>`;
+    const hbtn=document.getElementById('hint'); if(hbtn) hbtn.onclick=()=>{ hb.hidden=false; play('flip'); renderSteps(); };
+    document.getElementById('nx').onclick = ()=>{ shown++; renderSteps(); };
+    document.getElementById('all').onclick = ()=>{ shown=t.steps.length; renderSteps(); };
+  } else {
+    btns.innerHTML = `<button class="btn" id="hide">Скрыть решение</button>`;
+    document.getElementById('hide').onclick = ()=>{ shown=0; renderSteps(); };
+  }
+}
+renderTask();
+
+/* ---------- 3D models: rotate, highlight, find on the drawing ---------- */
+const lab = n => n.replace(/1$/,'₁');
+const M3D = {
+  cube: { name:'Куб',
+    V:{A:[-1,-1,1],B:[1,-1,1],C:[1,-1,-1],D:[-1,-1,-1],A1:[-1,1,1],B1:[1,1,1],C1:[1,1,-1],D1:[-1,1,-1]},
+    X:{},
+    F:[['A','B','C','D'],['A1','B1','C1','D1'],['A','B','B1','A1'],['B','C','C1','B1'],['C','D','D1','C1'],['D','A','A1','D1']],
+    quiz:['par','skew','inter','perpPlane','parPlane'],
+    presets:[
+      {tag:'t-def',k:'Параллельные',t:'AB ∥ D₁C₁',segs:[['A','B',1],['D1','C1',1]],planes:[['A','B','C1','D1']],x:['AB и D₁C₁ лежат в одной плоскости ABC₁D₁ (она подсвечена) и не пересекаются.','Значит, это параллельные прямые.']},
+      {tag:'t-sign',k:'Скрещивающиеся',t:'AB и CC₁',segs:[['A','B',1],['C','C1',2]],planes:[['A','B','C','D','b']],x:['AB лежит в плоскости ABC, а CC₁ пересекает её в точке C, которая не лежит на AB.','По признаку AB и CC₁ скрещиваются: через них нельзя провести одну плоскость.']},
+      {tag:'t-def',k:'Пересекающиеся',t:'AB и BC',segs:[['A','B',1],['B','C',2]],planes:[],x:['AB и BC имеют общую точку B и лежат в одной плоскости ABC.']},
+      {tag:'t-sign',k:'Прямая ⊥ плоскости',t:'AA₁ ⊥ (ABC)',segs:[['A','A1',2],['A','B',1],['A','D',1]],planes:[['A','B','C','D','b']],x:['AA₁ ⊥ AB и AA₁ ⊥ AD, а AB и AD пересекаются.','По признаку перпендикулярности AA₁ ⊥ плоскости ABC.']},
+      {tag:'t-sign',k:'Прямая ∥ плоскости',t:'A₁B₁ ∥ (ABC)',segs:[['A1','B1',2],['A','B',1]],planes:[['A','B','C','D','b']],x:['A₁B₁ не лежит в плоскости ABC и параллельна прямой AB этой плоскости.','По признаку A₁B₁ ∥ (ABC).']},
+      {tag:'t-sign',k:'Параллельные плоскости',t:'(ABC) ∥ (A₁B₁C₁)',segs:[['A','B',1],['A','D',1],['A1','B1',2],['A1','D1',2]],planes:[['A','B','C','D','b'],['A1','B1','C1','D1']],x:['Пересекающиеся прямые A₁B₁ и A₁D₁ параллельны прямым AB и AD нижней грани.','По признаку плоскости параллельны.']},
+      {tag:'t-sign',k:'Перпендикулярные плоскости',t:'(ABB₁) ⊥ (ABC)',segs:[['A','A1',2]],planes:[['A','B','B1','A1'],['A','B','C','D','b']],x:['Плоскость ABB₁ проходит через прямую AA₁, а AA₁ ⊥ (ABC).','По признаку плоскости перпендикулярны.']},
+      {tag:'t-thm',k:'Три перпендикуляра',t:'AC ⊥ B₁D',segs:[['B1','D',2],['B','B1',3],['B','D',1],['A','C',4]],planes:[['A','B','C','D','b']],x:['B₁D — наклонная к плоскости ABC, BD — её проекция (BB₁ — перпендикуляр).','AC ⊥ BD как диагонали квадрата. По теореме о трёх перпендикулярах AC ⊥ B₁D.']}
+    ]},
+  pyr: { name:'Пирамида',
+    V:{A:[-1.1,-1,1.1],B:[1.1,-1,1.1],C:[1.1,-1,-1.1],D:[-1.1,-1,-1.1],S:[0,1.4,0]},
+    X:{O:[0,-1,0],M:[0,-1,-1.1]}, XF:{O:[0],M:[0,3]},
+    F:[['A','B','C','D'],['S','A','B'],['S','B','C'],['S','C','D'],['S','D','A']],
+    quiz:['par','skew','inter'],
+    presets:[
+      {tag:'t-def',k:'Высота',t:'SO ⊥ (ABC)',segs:[['S','O',2],['O','A',1],['S','A',3]],planes:[['A','B','C','D','b']],x:['SO — перпендикуляр к плоскости основания, O — его основание (центр квадрата).','SA — наклонная, OA — её проекция на плоскость основания.']},
+      {tag:'t-sign',k:'Скрещивающиеся',t:'SA и BC',segs:[['S','A',1],['B','C',2]],planes:[['A','B','C','D','b']],x:['SA пересекает плоскость ABC в точке A, которая не лежит на BC.','По признаку SA и BC скрещиваются.']},
+      {tag:'t-thm',k:'Три перпендикуляра',t:'SM ⊥ CD',segs:[['S','O',3],['O','M',1],['S','M',2],['C','D',4]],planes:[['A','B','C','D','b']],x:['M — середина CD. OM — проекция наклонной SM, и OM ⊥ CD.','По теореме о трёх перпендикулярах SM ⊥ CD. Отрезок SM называют апофемой.']},
+      {tag:'t-sign',k:'Перпендикулярные плоскости',t:'(SAC) ⊥ (ABC)',segs:[['S','O',2]],planes:[['S','A','C'],['A','B','C','D','b']],x:['Плоскость SAC проходит через высоту SO, а SO ⊥ (ABC).','По признаку (SAC) ⊥ (ABC).']}
+    ]},
+  prism: { name:'Призма',
+    V:{A:[-1.15,-1,.8],B:[1.15,-1,.8],C:[0,-1,-1.1],A1:[-1.15,1,.8],B1:[1.15,1,.8],C1:[0,1,-1.1]},
+    X:{},
+    F:[['A','B','C'],['A1','B1','C1'],['A','B','B1','A1'],['B','C','C1','B1'],['C','A','A1','C1']],
+    quiz:['par','skew','inter','perpPlane','parPlane'],
+    presets:[
+      {tag:'t-prop',k:'Параллельные рёбра',t:'AA₁ ∥ BB₁ ∥ CC₁',segs:[['A','A1',1],['B','B1',1],['C','C1',1]],planes:[['A','B','C','b']],x:['Боковые рёбра прямой призмы перпендикулярны основанию.','Две прямые, перпендикулярные одной плоскости, параллельны.']},
+      {tag:'t-def',k:'Параллельные плоскости',t:'(ABC) ∥ (A₁B₁C₁)',segs:[],planes:[['A','B','C','b'],['A1','B1','C1']],x:['Основания призмы лежат в параллельных плоскостях: у них нет общих точек.']},
+      {tag:'t-sign',k:'Скрещивающиеся',t:'AB и B₁C₁',segs:[['A','B',1],['B1','C1',2]],planes:[],x:['AB и B₁C₁ не пересекаются (лежат в параллельных плоскостях оснований) и не параллельны.','Значит, они скрещиваются.']},
+      {tag:'t-sign',k:'Прямая ∥ плоскости',t:'A₁B₁ ∥ (ABC)',segs:[['A1','B1',2],['A','B',1]],planes:[['A','B','C','b']],x:['A₁B₁ параллельна прямой AB, лежащей в плоскости ABC.','По признаку A₁B₁ ∥ (ABC).']}
+    ]}
+};
+for(const k in M3D){ const m=M3D[k], seen=new Set(); m.E=[];
+  const rk=k=>k==='S'?-1:Object.keys(m.V).indexOf(k);
+  m.F.forEach(f=>f.forEach((a,i)=>{ const b=f[(i+1)%f.length], key=[a,b].sort().join('-'); if(!seen.has(key)){ seen.add(key); m.E.push([a,b].sort((x,y)=>rk(x)-rk(y))); } })); }
+const vsub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]], vcross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]], vdot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2], vlen=a=>Math.hypot(...a);
+const R3 = { model:'cube', yaw:-.62, pitch:.42, base:-.62, at:0, preset:0, mode:'look', auto:!reduceMotion, raf:0, last:0, drag:null, q:null, right:0, total:0 };
+const m3svg=document.getElementById('m3');
+function P3(m,n){ return m.V[n] || m.X[n]; }
+function proj(p){
+  const cy=Math.cos(R3.yaw), sy=Math.sin(R3.yaw), cp=Math.cos(R3.pitch), sp=Math.sin(R3.pitch);
+  const x1=p[0]*cy+p[2]*sy, z1=-p[0]*sy+p[2]*cy, y2=p[1]*cp-z1*sp, z2=p[1]*sp+z1*cp;
+  return [160+x1*62, 150-y2*62, z2];
+}
+function rotN(v){ const p=proj(v), o=proj([0,0,0]); return p[2]-o[2]; }
+function faceInfo(m){
+  const c=Object.values(m.V).reduce((s,v)=>[s[0]+v[0],s[1]+v[1],s[2]+v[2]],[0,0,0]).map(x=>x/Object.keys(m.V).length);
+  return m.F.map(f=>{ const a=m.V[f[0]], b=m.V[f[1]], d=m.V[f[2]]; let n=vcross(vsub(b,a),vsub(d,a));
+    const fc=f.reduce((s,k)=>[s[0]+m.V[k][0],s[1]+m.V[k][1],s[2]+m.V[k][2]],[0,0,0]).map(x=>x/f.length);
+    if(vdot(n,vsub(fc,c))<0) n=n.map(x=>-x);
+    return { f, n, vis: rotN(n)>1e-9 }; });
+}
+function onFaces(m, a, b, fi){ return fi.filter((F,i)=>{ const inF=k=>F.f.includes(k) || (m.XF && m.XF[k] && m.XF[k].includes(i)); return inF(a)&&inF(b); }); }
+function edgeIdx(m,a,b){ return m.E.findIndex(e=>(e[0]===a&&e[1]===b)||(e[0]===b&&e[1]===a)); }
+function m3render(){
+  const m=M3D[R3.model], fi=faceInfo(m), pts={};
+  [...Object.keys(m.V),...Object.keys(m.X)].forEach(k=>pts[k]=proj(P3(m,k)));
+  const segVis=(a,b)=>onFaces(m,a,b,fi).some(F=>F.vis);
+  let h='';
+  fi.forEach(F=>{ if(F.vis) h+=`<polygon class="face" points="${F.f.map(k=>pts[k].slice(0,2).map(v=>v.toFixed(1)).join(',')).join(' ')}"/>`; });
+  const pr = R3.mode==='look' ? m.presets[R3.preset] : null, q = R3.mode==='find' ? R3.q : null;
+  const planes = pr ? pr.planes : (q && q.face!=null ? [[...m.F[q.face],'b']] : []);
+  planes.forEach(pl=>{ const b=pl[pl.length-1]==='b', ks=b?pl.slice(0,-1):pl;
+    h+=`<polygon class="hplane${b?' b':''}" points="${ks.map(k=>pts[k].slice(0,2).map(v=>v.toFixed(1)).join(',')).join(' ')}"/>`; });
+  const ed=m.E.map((e,i)=>({e,i,vis:segVis(e[0],e[1])}));
+  ed.filter(x=>!x.vis).forEach(x=>{ const [a,b]=x.e; h+=`<line class="edge hid" x1="${pts[a][0].toFixed(1)}" y1="${pts[a][1].toFixed(1)}" x2="${pts[b][0].toFixed(1)}" y2="${pts[b][1].toFixed(1)}"/>`; });
+  ed.filter(x=>x.vis).forEach(x=>{ const [a,b]=x.e; h+=`<line class="edge" x1="${pts[a][0].toFixed(1)}" y1="${pts[a][1].toFixed(1)}" x2="${pts[b][0].toFixed(1)}" y2="${pts[b][1].toFixed(1)}"/>`; });
+  const segs = pr ? pr.segs : (q && q.edge!=null ? [[...m.E[q.edge],1]] : []);
+  segs.forEach(([a,b,c])=>{ h+=`<line class="hl c${c}${segVis(a,b)?'':' hid'}" x1="${pts[a][0].toFixed(1)}" y1="${pts[a][1].toFixed(1)}" x2="${pts[b][0].toFixed(1)}" y2="${pts[b][1].toFixed(1)}"/>`; });
+  if(q && q.answered){
+    q.ans.forEach(i=>{ if(i===q.pick) return; const [a,b]=m.E[i]; h+=`<line class="pick ans" x1="${pts[a][0]}" y1="${pts[a][1]}" x2="${pts[b][0]}" y2="${pts[b][1]}"/>`; });
+    const [a,b]=m.E[q.pick]; h+=`<line class="pick ${q.ok?'ok':'bad'}" x1="${pts[a][0]}" y1="${pts[a][1]}" x2="${pts[b][0]}" y2="${pts[b][1]}"/>`;
+  }
+  if(R3.mode==='find') ed.forEach(x=>{ const [a,b]=x.e; h+=`<line class="hit" data-e="${x.i}" x1="${pts[a][0].toFixed(1)}" y1="${pts[a][1].toFixed(1)}" x2="${pts[b][0].toFixed(1)}" y2="${pts[b][1].toFixed(1)}"/>`; });
+  const keys=Object.keys(m.V), cx=keys.reduce((s,k)=>s+pts[k][0],0)/keys.length, cyy=keys.reduce((s,k)=>s+pts[k][1],0)/keys.length;
+  const shownX = pr ? Object.keys(m.X).filter(k=>pr.segs.some(sg=>sg[0]===k||sg[1]===k)) : [];
+  [...keys, ...shownX].forEach(k=>{
+    const [x,y]=pts[k]; let dx=x-cx, dy=y-cyy, d=Math.hypot(dx,dy);
+    if(m.X[k]){ dx=10; dy=14; d=Math.hypot(dx,dy); }
+    if(d<1){ dx=0; dy=-1; d=1; }
+    h+=`<circle class="vx" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.6"/><text class="vl${m.X[k]?' x':''}" x="${(x+dx/d*16).toFixed(1)}" y="${(y+dy/d*16).toFixed(1)}">${lab(k)}</text>`;
+  });
+  m3svg.innerHTML=h;
+}
+/* ----- look mode ----- */
+function m3panel(){
+  const m=M3D[R3.model];
+  document.getElementById('m3-models').innerHTML=Object.keys(M3D).map(k=>`<button class="chip" data-model="${k}" aria-pressed="${k===R3.model}">${M3D[k].name}</button>`).join('');
+  document.querySelectorAll('[data-model]').forEach(b=>b.onclick=()=>{ R3.model=b.dataset.model; R3.preset=0; R3.yaw=R3.base=-.62; R3.at=0; R3.pitch=.42; R3.q=null; if(!reduceMotion) R3.auto=true; play('tick'); m3panel(); if(R3.mode==='find') newQ(); m3render(); m3loop(); });
+  document.getElementById('m3-presets').innerHTML=m.presets.map((p,i)=>`<button class="preset" data-p="${i}" aria-pressed="${i===R3.preset}"><span class="tag ${p.tag}">${p.k}</span><span>${p.t}</span></button>`).join('');
+  document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{ R3.preset=+b.dataset.p; play('tick'); m3panel(); m3render(); });
+  const p=m.presets[R3.preset];
+  document.getElementById('m3-explain').innerHTML=`<p><span class="tag ${p.tag}">${p.k}</span> <b>${p.t}</b></p>`+p.x.map(t=>`<p>${t}</p>`).join('');
+  document.getElementById('m3-look').hidden = R3.mode!=='look';
+  document.getElementById('m3-find').hidden = R3.mode!=='find';
+  document.getElementById('m3-tip').textContent = R3.mode==='find' ? 'Нажми на ребро. Модель можно вращать' : 'Крути модель пальцем или мышкой';
+}
+document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{
+  R3.mode=b.dataset.m; document.querySelectorAll('[data-m]').forEach(x=>x.setAttribute('aria-pressed', x===b));
+  if(R3.mode==='find'){ R3.auto=false; if(!R3.q) newQ(); } play('tick'); m3panel(); m3render();
+});
+/* ----- find mode ----- */
+function rel(m, i, j){
+  const [a,b]=m.E[i], [c,d]=m.E[j];
+  if(i===j) return 'same';
+  if(a===c||a===d||b===c||b===d) return 'inter';
+  const u=vsub(P3(m,b),P3(m,a)), v=vsub(P3(m,d),P3(m,c));
+  if(vlen(vcross(u,v))<1e-6) return 'par';
+  if(Math.abs(vdot(vsub(P3(m,c),P3(m,a)), vcross(u,v)))<1e-6) return 'coplanar';
+  return 'skew';
+}
+const REL_NAME={par:'параллельно ему',skew:'скрещивается с ним',inter:'пересекается с ним',coplanar:'лежит с ним в одной плоскости',same:'это то же самое ребро'};
+function faceName(m,fi){ return '('+m.F[fi].slice(0,3).map(lab).join('')+')'; }
+function newQ(){
+  const m=M3D[R3.model], fi=faceInfo(m);
+  for(let tries=0; tries<60; tries++){
+    const type=m.quiz[Math.random()*m.quiz.length|0];
+    if(type==='perpPlane'||type==='parPlane'){
+      const f=Math.random()*m.F.length|0, n=fi[f].n, inF=k=>m.F[f].includes(k);
+      const ans=m.E.map((e,i)=>i).filter(i=>{ const [a,b]=m.E[i], dv=vsub(P3(m,b),P3(m,a));
+        return type==='perpPlane' ? vlen(vcross(dv,n))<1e-6 : (!(inF(a)&&inF(b)) && Math.abs(vdot(dv,n))<1e-6); });
+      if(!ans.length) continue;
+      R3.q={type, face:f, edge:null, ans, answered:false, text: type==='perpPlane' ? `Нажми на ребро, перпендикулярное плоскости ${faceName(m,f)}` : `Нажми на ребро, параллельное плоскости ${faceName(m,f)} (и не лежащее в ней)`};
+    } else {
+      const e=Math.random()*m.E.length|0, ans=m.E.map((x,i)=>i).filter(i=>rel(m,e,i)===type);
+      if(!ans.length) continue;
+      const nm=m.E[e].map(lab).join('');
+      R3.q={type, face:null, edge:e, ans, answered:false, text: type==='par' ? `Нажми на ребро, параллельное ребру ${nm}` : type==='skew' ? `Нажми на ребро, которое скрещивается с ребром ${nm}` : `Нажми на ребро, которое имеет общую точку с ребром ${nm}`};
+    }
+    break;
+  }
+  document.getElementById('m3-q').innerHTML=`<p class="ask">${R3.q.text}</p>`;
+  const fb=document.getElementById('m3-fb'); fb.className='m3-fb'; fb.textContent='';
+  m3score(); m3render();
+}
+function m3score(){ document.getElementById('m3-score').textContent = R3.total ? `верно: ${R3.right} из ${R3.total}` : ''; }
+function pickEdge(i){
+  const q=R3.q, m=M3D[R3.model]; if(!q || q.answered) return;
+  const fb=document.getElementById('m3-fb'), nm=m.E[i].map(lab).join('');
+  if(q.edge===i){ fb.className='m3-fb bad'; fb.textContent='Это само ребро из вопроса. Выбери другое.'; return; }
+  q.pick=i; q.answered=true; q.ok=q.ans.includes(i); R3.total++;
+  const others=q.ans.filter(x=>x!==i).map(x=>m.E[x].map(lab).join(''));
+  if(q.ok){ R3.right++; store.set('st-find', store.get('st-find',0)+1); renderYarns(); play('ok');
+    fb.className='m3-fb ok'; fb.textContent=`Верно, ${nm} подходит!`+(others.length?` Ещё подходят: ${others.join(', ')}.`:'');
+  } else { play('bad');
+    let why=''; if(q.edge!=null){ why=` Ребро ${nm} ${REL_NAME[rel(m,q.edge,i)]}.`; }
+    fb.className='m3-fb bad'; fb.textContent=`Не то.${why} Подходят: ${q.ans.map(x=>m.E[x].map(lab).join('')).join(', ')} (показаны пунктиром).`;
+  }
+  m3score(); m3render();
+}
+document.getElementById('m3-next').onclick=()=>{ play('tick'); newQ(); };
+/* ----- rotation ----- */
+m3svg.addEventListener('pointerdown', e=>{
+  const hit=e.target.closest && e.target.closest('.hit');
+  R3.drag={x:e.clientX,y:e.clientY,moved:false,edge:hit?+hit.dataset.e:null};
+  m3svg.setPointerCapture(e.pointerId);
+});
+m3svg.addEventListener('pointermove', e=>{
+  const d=R3.drag; if(!d) return;
+  const dx=e.clientX-d.x, dy=e.clientY-d.y;
+  if(!d.moved && Math.hypot(dx,dy)<6) return;
+  d.moved=true; R3.auto=false; m3svg.classList.add('dragging');
+  R3.yaw+=dx*.011; R3.pitch=Math.max(-1.3,Math.min(1.3,R3.pitch+dy*.011)); d.x=e.clientX; d.y=e.clientY;
+  m3render();
+});
+const m3end=e=>{ const d=R3.drag; R3.drag=null; m3svg.classList.remove('dragging'); if(d && !d.moved && d.edge!=null && R3.mode==='find') pickEdge(d.edge); };
+m3svg.addEventListener('pointerup', m3end); m3svg.addEventListener('pointercancel', ()=>{ R3.drag=null; m3svg.classList.remove('dragging'); });
+function m3tick(t){
+  const dt=Math.min(.05,(t-(R3.last||t))/1000); R3.last=t;
+  if(R3.auto && R3.mode==='look'){ R3.at+=dt; R3.yaw=R3.base+Math.sin(R3.at*.7)*.5; m3render(); R3.raf=requestAnimationFrame(m3tick); } else R3.raf=0;
+}
+function m3loop(){ if(!R3.raf && R3.auto){ R3.last=0; R3.raf=requestAnimationFrame(m3tick); } }
+function m3Show(){ m3panel(); m3render(); m3loop(); }
+function m3Hide(){ cancelAnimationFrame(R3.raf); R3.raf=0; }
+
+/* ---------- true or false: swipe the card ---------- */
+const TF = [
+  ['Через любые три точки проходит плоскость, и притом только одна.', false, 'Только если точки не лежат на одной прямой. Через три точки одной прямой проходит бесконечно много плоскостей.'],
+  ['Через прямую и не лежащую на ней точку проходит ровно одна плоскость.', true, 'Это следствие из аксиом.'],
+  ['Две прямые, не имеющие общих точек, параллельны.', false, 'Они могут быть скрещивающимися. Параллельные прямые ещё и лежат в одной плоскости.'],
+  ['Скрещивающиеся прямые не лежат в одной плоскости.', true, 'Это и есть определение скрещивающихся прямых.'],
+  ['Две прямые, перпендикулярные третьей прямой, параллельны.', false, 'В пространстве это не так: например, в кубе AB ⊥ AA₁ и AD ⊥ AA₁, но AB и AD пересекаются.'],
+  ['Две прямые, перпендикулярные одной плоскости, параллельны.', true, 'Это свойство перпендикулярных прямой и плоскости.'],
+  ['Если прямая перпендикулярна двум прямым плоскости, то она перпендикулярна этой плоскости.', false, 'Эти две прямые должны пересекаться. Если они параллельны, вывод неверен.'],
+  ['Если прямая параллельна плоскости, то она параллельна любой прямой этой плоскости.', false, 'С некоторыми прямыми плоскости она будет скрещиваться.'],
+  ['Две различные плоскости могут иметь ровно одну общую точку.', false, 'Если у плоскостей есть общая точка, то у них есть общая прямая.'],
+  ['Если две параллельные плоскости пересечены третьей, то линии пересечения параллельны.', true, 'Это свойство параллельных плоскостей.'],
+  ['Отрезки параллельных прямых, заключённые между параллельными плоскостями, равны.', true, 'Это свойство параллельных плоскостей.'],
+  ['Две плоскости, параллельные одной прямой, параллельны между собой.', false, 'Они могут пересекаться, например по прямой, параллельной данной.'],
+  ['Перпендикуляр, проведённый из точки к плоскости, короче любой наклонной из той же точки.', true, 'Перпендикуляр — катет, наклонная — гипотенуза прямоугольного треугольника.'],
+  ['Прямая в плоскости, перпендикулярная наклонной в её основании, перпендикулярна и её проекции.', true, 'Это теорема, обратная теореме о трёх перпендикулярах.'],
+  ['Если две прямые параллельны одной плоскости, то они параллельны между собой.', false, 'Такие прямые могут пересекаться или скрещиваться.'],
+  ['Угол между скрещивающимися прямыми может быть равен 90°.', true, 'Тогда скрещивающиеся прямые называют перпендикулярными.'],
+  ['Если одна из двух параллельных прямых пересекает плоскость, то и другая её пересекает.', true, 'Если бы другая была параллельна плоскости или лежала в ней, то и первая не могла бы её пересекать.'],
+  ['Если плоскость проходит через прямую, перпендикулярную другой плоскости, то эти плоскости перпендикулярны.', true, 'Это признак перпендикулярности плоскостей.'],
+  ['Прямая и плоскость могут иметь ровно две общие точки.', false, 'Если две точки прямой лежат в плоскости, то вся прямая лежит в этой плоскости.'],
+  ['Если две пересекающиеся прямые одной плоскости параллельны двум прямым другой плоскости, то плоскости параллельны.', true, 'Это признак параллельности плоскостей.']
+];
+const T5 = { order:[], i:0, score:0, answered:false, drag:null };
+const tfCard=document.getElementById('tf-card'), tfRes=document.getElementById('tf-res');
+function tfNew(){ T5.order=shuffle(TF.map((_,i)=>i)); T5.i=0; T5.score=0; tfShow(); }
+function tfTop(){
+  const n=TF.length;
+  document.getElementById('tf-count').textContent = T5.i>=n ? `Готово: ${n} из ${n}` : `${T5.i+1} из ${n}`;
+  document.getElementById('tf-bar').style.width = ((T5.i+(T5.answered?1:0))/n*100)+'%';
+  document.getElementById('tf-score').textContent = 'верно: '+T5.score;
+}
+function tfShow(){
+  T5.answered=false; tfRes.innerHTML='';
+  document.getElementById('tf-btns').hidden=false;
+  if(T5.i>=TF.length){ return tfEnd(); }
+  document.getElementById('tf-stage').hidden=false;
+  document.getElementById('tf-q').textContent = TF[T5.order[T5.i]][0];
+  document.getElementById('tf-n').textContent = 'Утверждение';
+  tfCard.style.transition='none'; tfCard.style.transform='translateY(18px) scale(.96)'; tfCard.style.opacity='0';
+  tfLean(0);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ tfCard.style.transition=''; tfCard.style.transform=''; tfCard.style.opacity='1'; }));
+  tfTop();
+}
+function tfLean(dx){
+  const k=Math.max(-1,Math.min(1,dx/110));
+  tfCard.querySelector('.tf-lean.no').style.opacity = k<0 ? -k : 0;
+  tfCard.querySelector('.tf-lean.yes').style.opacity = k>0 ? k : 0;
+}
+function tfAnswer(saysTrue){
+  if(T5.answered || T5.i>=TF.length) return;
+  T5.answered=true;
+  const [q, truth, why]=TF[T5.order[T5.i]], ok = saysTrue===truth;
+  if(ok){ T5.score++; addToSet('st-tf', T5.order[T5.i]); play('ok'); } else play('bad');
+  tfCard.style.transform=`translateX(${saysTrue?140:-140}%) rotate(${saysTrue?18:-18}deg)`; tfCard.style.opacity='0';
+  document.getElementById('tf-btns').hidden=true;
+  tfRes.innerHTML=`<div class="tf-res ${ok?'ok':'bad'}">${catSvg(ok?'happy':'sleepy')}<strong>${ok?'Правильно!':'Не совсем.'} Утверждение ${truth?'верное':'неверное'}.</strong><p><i>${q}</i></p><p>${why}</p><button class="btn primary" id="tf-next">Дальше →</button></div>`;
+  document.getElementById('tf-next').onclick=()=>{ T5.i++; tfShow(); play('tick'); };
+  document.getElementById('tf-next').focus({preventScroll:true});
+  tfTop();
+}
+function tfEnd(){
+  const n=TF.length, s=T5.score, mood = s>=17?'happy': s>=11?'open':'sleepy';
+  document.getElementById('tf-stage').hidden=true; document.getElementById('tf-btns').hidden=true;
+  tfRes.innerHTML=`<div class="tf-res ${s>=11?'ok':'bad'}">${catSvg(mood)}<strong>Верно ${s} из ${n}</strong><p>${s===n?'Идеально! Ни одной ошибки.': s>=17?'Отличный результат.':'Перечитай конспект и попробуй ещё раз.'}</p><button class="btn primary" id="tf-again">Ещё раз</button></div>`;
+  document.getElementById('tf-again').onclick=()=>{ tfNew(); play('tick'); };
+  play(s>=17?'win':'flip'); tfTop();
+}
+document.getElementById('tf-no').onclick=()=>tfAnswer(false);
+document.getElementById('tf-yes').onclick=()=>tfAnswer(true);
+tfCard.addEventListener('pointerdown', e=>{ if(T5.answered) return; T5.drag={x:e.clientX,y:e.clientY,dx:0,on:false,id:e.pointerId}; });
+tfCard.addEventListener('pointermove', e=>{
+  const d=T5.drag; if(!d) return;
+  const dx=e.clientX-d.x, dy=e.clientY-d.y;
+  if(!d.on){ if(Math.abs(dx)<8) return; if(Math.abs(dy)>Math.abs(dx)){ T5.drag=null; return; } d.on=true; tfCard.setPointerCapture(d.id); tfCard.classList.add('dragging'); }
+  d.dx=dx; tfCard.style.transform=`translateX(${dx}px) rotate(${dx/18}deg)`; tfLean(dx);
+});
+const tfUp=()=>{ const d=T5.drag; T5.drag=null; if(!d||!d.on) return; tfCard.classList.remove('dragging');
+  if(Math.abs(d.dx)>90) tfAnswer(d.dx>0); else { tfCard.style.transform=''; tfLean(0); } };
+tfCard.addEventListener('pointerup', tfUp); tfCard.addEventListener('pointercancel', tfUp);
+document.addEventListener('keydown', e=>{ if(document.getElementById('view-verno').hidden || e.target.tagName==='INPUT') return;
+  if(e.key==='ArrowLeft') tfAnswer(false); else if(e.key==='ArrowRight') tfAnswer(true); });
+tfNew();
+
+/* ---------- boot ---------- */
+renderYarns();
+petsInit();
+route();
+</script>
+
+</body>
+</html>
