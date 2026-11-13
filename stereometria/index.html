@@ -343,6 +343,46 @@ html[data-night] .m3-fb.ok{color:#7FD39C} html[data-night] .m3-fb.bad{color:#FF9
 .tf-res p{margin:0}
 .tf-res .btn{justify-self:start;margin-top:6px}
 
+
+/* ---------- tests: choice, pairs, find the mistake ---------- */
+.tmodes{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.tmodes .chip{font-size:.92rem}
+.qcard{max-width:620px;margin:0 auto;background:var(--paper);border:2.5px solid var(--ink);border-radius:14px;box-shadow:6px 6px 0 var(--ink);padding:20px;display:grid;gap:14px}
+.qcard .tf-n{display:block}
+.qq{font-family:var(--display);font-weight:700;font-size:clamp(1rem,3.8vw,1.2rem);line-height:1.35;margin:0;text-wrap:balance}
+.opts{display:grid;gap:10px}
+.opt{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:center;text-align:left;font:inherit;font-weight:700;font-size:1rem;color:var(--ink);background:var(--cream);border:2px solid var(--ink);border-radius:10px;padding:10px 12px;cursor:pointer;transition:transform .1s}
+.opt:hover:not(:disabled){transform:translateX(3px);background:var(--butter)}
+.opt .lt{width:30px;height:30px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;font-family:var(--display);font-size:.75rem;background:var(--paper)}
+.opt:disabled{cursor:default}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok)} .opt.ok .lt{background:var(--ok);color:#fff;border-color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad)} .opt.bad .lt{background:var(--bad);color:#fff;border-color:var(--bad)}
+.opt.dim{opacity:.55}
+.qexp{border-top:2px dashed var(--line);padding-top:12px;display:grid;gap:6px}
+.qexp strong{font-family:var(--display);font-size:1rem}
+.qexp.ok strong{color:var(--ok)} .qexp.bad strong{color:var(--bad)}
+.qexp p{margin:0}
+.qexp .btn{justify-self:start;margin-top:4px}
+.pairs{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:10px 14px;max-width:760px;margin:0 auto}
+.pcol{display:grid;gap:10px;align-content:start;min-width:0}
+.pcol h3{font-family:var(--display);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;margin:0;color:var(--wall-ink)}
+.pi{min-width:0;overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto;font:inherit;text-align:left;color:var(--ink);background:var(--paper);border:2px solid var(--ink);border-radius:10px;padding:10px 12px;cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:transform .1s, background .2s;line-height:1.35}
+.pi.term{font-weight:800}
+.pi.def{font-size:.94rem}
+.pi.sel{background:var(--pink);transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--ink)}
+.pi.done{background:var(--ok-bg);border-color:var(--ok);box-shadow:none;cursor:default;opacity:.85}
+.pi.wrong{background:var(--bad-bg);animation:shake .4s}
+.pi .pn{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--ok);color:#fff;font-family:var(--display);font-size:.65rem;margin-right:6px;vertical-align:1px}
+.pfoot{max-width:760px;margin:18px auto 0}
+@media (max-width:520px){.pairs{gap:10px}.pi{padding:9px 9px}.pi.term{font-size:.9rem}.pi.def{font-size:.86rem}}
+.errq{font-size:clamp(1.05rem,3.9vw,1.2rem);line-height:2;margin:0}
+.tok{font:inherit;color:var(--ink);background:none;border:0;border-bottom:2px dotted transparent;border-radius:4px;padding:1px 0;margin:0;cursor:pointer}
+.tok:hover:not(:disabled){background:var(--butter);border-bottom-color:var(--ink)}
+.tok:disabled{cursor:default}
+.tok.miss{background:var(--bad-bg);animation:shake .4s}
+.tok.found{background:var(--bad-bg);color:var(--bad);text-decoration:line-through 2px}
+.fixw{font-family:var(--hand);font-weight:700;font-size:1.35em;color:var(--ok);margin:0 4px}
+
 /* ---------- flashcards ---------- */
 .fc-zone{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:24px;align-items:start}
 @media (max-width:720px){.fc-zone{grid-template-columns:minmax(0,1fr)}}
@@ -476,7 +516,7 @@ html[data-night] .m3-fb.ok{color:#7FD39C} html[data-night] .m3-fb.bad{color:#FF9
       <a class="pic" href="#kartochki" data-view="kartochki"><span class="pf"><span class="pm"><svg viewBox="0 0 62 42" aria-hidden="true"><rect x="10" y="9" width="30" height="26" rx="3" transform="rotate(-10 25 22)" fill="#F3C4E3" stroke="#1D1B1E" stroke-width="2"/><rect x="24" y="8" width="30" height="26" rx="3" transform="rotate(8 39 21)" fill="#FFFDF6" stroke="#1D1B1E" stroke-width="2"/><path class="ica" d="M33 19 L37 24 L46 15"/></svg><span class="cap">Карточки</span></span></span></a>
       <a class="pic" href="#zadachi" data-view="zadachi"><span class="pf"><span class="pm"><svg viewBox="0 0 62 42" aria-hidden="true"><path class="ic" d="M30 4 L10 36 L46 38 Z M30 4 L54 30 L46 38"/><path class="ic" d="M10 36 L54 30" stroke-dasharray="4 3"/><line class="ica" x1="30" y1="4" x2="30" y2="33"/></svg><span class="cap">Задачи</span></span></span></a>
       <a class="pic" href="#modeli" data-view="modeli"><span class="pf"><span class="pm"><svg viewBox="0 0 62 42" aria-hidden="true"><path class="ic" d="M14 14 L40 14 L40 38 L14 38 Z M14 14 L24 5 L50 5 L40 14 M50 5 L50 29 L40 38"/><path class="ic" d="M24 5 L24 29 L14 38 M24 29 L50 29" stroke-dasharray="3 3"/><line class="ica" x1="14" y1="38" x2="50" y2="5"/></svg><span class="cap">3D-модели</span></span></span></a>
-      <a class="pic" href="#verno" data-view="verno"><span class="pf"><span class="pm"><svg viewBox="0 0 62 42" aria-hidden="true"><rect x="5" y="7" width="24" height="30" rx="4" transform="rotate(-8 17 22)" fill="#F9E0DB" stroke="#1D1B1E" stroke-width="2"/><path d="M12 17 L22 27 M22 17 L12 27" stroke="#C0392E" stroke-width="2.6" stroke-linecap="round" transform="rotate(-8 17 22)"/><rect x="33" y="6" width="24" height="30" rx="4" transform="rotate(8 45 21)" fill="#DFF0E3" stroke="#1D1B1E" stroke-width="2"/><path d="M38 21 L43 26 L52 16" stroke="#2F7D4D" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="cap">Верно?</span></span></span></a>
+      <a class="pic" href="#verno" data-view="verno"><span class="pf"><span class="pm"><svg viewBox="0 0 62 42" aria-hidden="true"><rect x="5" y="7" width="24" height="30" rx="4" transform="rotate(-8 17 22)" fill="#F9E0DB" stroke="#1D1B1E" stroke-width="2"/><path d="M12 17 L22 27 M22 17 L12 27" stroke="#C0392E" stroke-width="2.6" stroke-linecap="round" transform="rotate(-8 17 22)"/><rect x="33" y="6" width="24" height="30" rx="4" transform="rotate(8 45 21)" fill="#DFF0E3" stroke="#1D1B1E" stroke-width="2"/><path d="M38 21 L43 26 L52 16" stroke="#2F7D4D" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="cap">Тесты</span></span></span></a>
     </nav>
   </div>
 </header>
@@ -652,6 +692,13 @@ html[data-night] .m3-fb.ok{color:#7FD39C} html[data-night] .m3-fb.bad{color:#FF9
 </section>
 
 <section id="view-verno" class="view" hidden>
+  <div class="tmodes" role="group" aria-label="Вид проверки">
+    <button class="chip" data-tm="tf" aria-pressed="true">Верно или нет</button>
+    <button class="chip" data-tm="mc" aria-pressed="false">Выбери ответ</button>
+    <button class="chip" data-tm="pr" aria-pressed="false">Соедини пары</button>
+    <button class="chip" data-tm="er" aria-pressed="false">Найди ошибку</button>
+  </div>
+  <div id="tm-tf">
   <div class="game-top">
     <div class="gp"><span class="gp-count" id="tf-count">1 из 20</span><div class="progress"><i id="tf-bar"></i></div></div>
     <span class="hand" id="tf-score">верно: 0</span>
@@ -662,6 +709,20 @@ html[data-night] .m3-fb.ok{color:#7FD39C} html[data-night] .m3-fb.bad{color:#FF9
   </div>
   <div class="tf-btns" id="tf-btns"><button class="btn no" id="tf-no">← Неверно</button><button class="btn yes" id="tf-yes">Верно →</button></div>
   <div id="tf-res"></div>
+  </div>
+  <div id="tm-mc" hidden>
+    <div class="game-top"><div class="gp"><span class="gp-count" id="mc-count">1 из 16</span><div class="progress"><i id="mc-bar"></i></div></div><span class="hand" id="mc-score">верно: 0</span></div>
+    <div class="qcard" id="mc-card"></div>
+  </div>
+  <div id="tm-pr" hidden>
+    <div class="game-top"><div class="gp"><span class="gp-count" id="pr-count">Пары: 0 из 5</span><div class="progress"><i id="pr-bar"></i></div></div><span class="hand" id="pr-mist">ошибок: 0</span></div>
+    <div class="pairs" lang="ru"><div class="pcol"><h3>Понятие</h3><div class="pcol" id="pr-terms"></div></div><div class="pcol"><h3>Что это значит</h3><div class="pcol" id="pr-defs"></div></div></div>
+    <div class="pfoot" id="pr-foot"></div>
+  </div>
+  <div id="tm-er" hidden>
+    <div class="game-top"><div class="gp"><span class="gp-count" id="er-count">1 из 14</span><div class="progress"><i id="er-bar"></i></div></div><span class="hand" id="er-score">с первого раза: 0</span></div>
+    <div class="qcard" id="er-card"></div>
+  </div>
 </section>
 
 </div>
@@ -752,7 +813,7 @@ const YARN_LIST=[
   ['kartochki','Карточки', ()=>Object.values(store.get('stereo-marks',{})).filter(v=>v==='k').length/23],
   ['zadachi','Задачи', ()=>store.get('st-tasks',[]).length/8],
   ['modeli','Найди на чертеже', ()=>Math.min(1, store.get('st-find',0)/10)],
-  ['verno','Верно или нет', ()=>store.get('st-tf',[]).length/20]
+  ['verno','Тесты', ()=>(store.get('st-tf',[]).length+store.get('st-mc',[]).length+store.get('st-pr',[]).length+store.get('st-er',[]).length)/(20+16+10+14)]
 ];
 function renderYarns(){
   const el=document.getElementById('yarns'); let full=0;
@@ -1695,9 +1756,186 @@ tfCard.addEventListener('pointermove', e=>{
 const tfUp=()=>{ const d=T5.drag; T5.drag=null; if(!d||!d.on) return; tfCard.classList.remove('dragging');
   if(Math.abs(d.dx)>90) tfAnswer(d.dx>0); else { tfCard.style.transform=''; tfLean(0); } };
 tfCard.addEventListener('pointerup', tfUp); tfCard.addEventListener('pointercancel', tfUp);
-document.addEventListener('keydown', e=>{ if(document.getElementById('view-verno').hidden || e.target.tagName==='INPUT') return;
+document.addEventListener('keydown', e=>{ if(document.getElementById('view-verno').hidden || document.getElementById('tm-tf').hidden || e.target.tagName==='INPUT') return;
   if(e.key==='ArrowLeft') tfAnswer(false); else if(e.key==='ArrowRight') tfAnswer(true); });
 tfNew();
+
+/* ---------- tests: modes ---------- */
+const TM = { cur:'tf', inited:{tf:true} };
+document.querySelectorAll('[data-tm]').forEach(b=>b.onclick=()=>{
+  TM.cur=b.dataset.tm; document.querySelectorAll('[data-tm]').forEach(x=>x.setAttribute('aria-pressed', x===b));
+  ['tf','mc','pr','er'].forEach(k=>document.getElementById('tm-'+k).hidden = k!==TM.cur);
+  if(!TM.inited[TM.cur]){ TM.inited[TM.cur]=true; ({mc:mcNew, pr:prNew, er:erNew})[TM.cur](); }
+  play('tick');
+});
+const esc = t => String(t).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- choose the answer ---------- */
+const MC = [
+  ['Сколько плоскостей проходит через три точки, лежащие на одной прямой?', ['Бесконечно много','Одна','Ни одной','Две'], 'Аксиома говорит про три точки, не лежащие на одной прямой. Через прямую проходит бесконечно много плоскостей.'],
+  ['Сколько плоскостей проходит через две параллельные прямые?', ['Одна','Ни одной','Две','Бесконечно много'], 'Параллельные прямые лежат в одной плоскости, и такая плоскость единственна.'],
+  ['Как могут располагаться две различные прямые в пространстве?', ['Пересекаться, быть параллельными или скрещиваться','Только пересекаться или быть параллельными','Только скрещиваться','Только пересекаться'], 'В пространстве, в отличие от плоскости, появляется третий случай — скрещивающиеся прямые.'],
+  ['Прямая a лежит в плоскости α, а прямая b пересекает α в точке, не лежащей на a. Как расположены a и b?', ['Скрещиваются','Параллельны','Пересекаются','Совпадают'], 'Это признак скрещивающихся прямых.'],
+  ['Сколько общих точек у прямой и параллельной ей плоскости?', ['Ни одной','Одна','Две','Бесконечно много'], 'По определению параллельные прямая и плоскость не имеют общих точек.'],
+  ['Прямая перпендикулярна двум параллельным прямым плоскости. Что можно утверждать?', ['Ничего определённого','Она перпендикулярна плоскости','Она параллельна плоскости','Она лежит в плоскости'], 'Признак требует двух пересекающихся прямых. С параллельными прямыми прямая может быть даже наклонной к плоскости.'],
+  ['Из одной точки к плоскости проведены перпендикуляр и наклонная. Что длиннее?', ['Наклонная','Перпендикуляр','Они равны','Зависит от точки'], 'Перпендикуляр — катет, наклонная — гипотенуза прямоугольного треугольника.'],
+  ['Две наклонные, проведённые из одной точки, имеют равные проекции. Что можно сказать о наклонных?', ['Они равны','Они перпендикулярны','Одна вдвое длиннее','Ничего определённого'], 'Получаются два прямоугольных треугольника с общим катетом-перпендикуляром и равными катетами-проекциями.'],
+  ['Какого условия достаточно, чтобы прямая была перпендикулярна плоскости?', ['Она перпендикулярна двум пересекающимся прямым плоскости','Она перпендикулярна одной прямой плоскости','Она перпендикулярна двум параллельным прямым плоскости','Она пересекает плоскость'], 'Это признак перпендикулярности прямой и плоскости.'],
+  ['Плоскости α и β параллельны, плоскость γ пересекает обе. Как расположены линии пересечения?', ['Параллельны','Пересекаются','Скрещиваются','Перпендикулярны'], 'Это свойство параллельных плоскостей.'],
+  ['Две плоскости имеют три общие точки, не лежащие на одной прямой. Что это значит?', ['Плоскости совпадают','Плоскости пересекаются по прямой','Плоскости параллельны','Плоскости перпендикулярны'], 'Через три точки, не лежащие на одной прямой, проходит только одна плоскость.'],
+  ['В кубе ABCDA₁B₁C₁D₁ как расположены прямые AB и C₁D₁?', ['Параллельны','Скрещиваются','Пересекаются','Перпендикулярны'], 'AB ∥ DC и DC ∥ D₁C₁, а сами AB и C₁D₁ лежат в плоскости ABC₁D₁.'],
+  ['В кубе ABCDA₁B₁C₁D₁ как расположены прямые AA₁ и BC?', ['Скрещиваются под углом 90°','Пересекаются','Параллельны','Скрещиваются под углом 45°'], 'AA₁ пересекает плоскость ABC в точке A, не лежащей на BC. Угол между ними равен углу между BB₁ и BC, то есть 90°.'],
+  ['Как называется утверждение: «Прямая в плоскости, перпендикулярная проекции наклонной, перпендикулярна и самой наклонной»?', ['Теорема о трёх перпендикулярах','Признак перпендикулярности прямой и плоскости','Признак параллельности плоскостей','Аксиома стереометрии'], 'В теореме участвуют три перпендикуляра: к плоскости, к проекции и к наклонной.'],
+  ['Плоскости перпендикулярны, если одна из них проходит через прямую, которая…', ['перпендикулярна другой плоскости','параллельна другой плоскости','лежит в другой плоскости','скрещивается с другой плоскостью'], 'Это признак перпендикулярности плоскостей.'],
+  ['Прямые a и b параллельны, и a ⊥ α. Что можно сказать о прямой b?', ['b ⊥ α','b ∥ α','b лежит в α','Ничего определённого'], 'Если плоскость перпендикулярна одной из двух параллельных прямых, то она перпендикулярна и другой.']
+];
+const MCS = { order:[], i:0, score:0 };
+function mcNew(){ MCS.order=shuffle(MC.map((_,i)=>i)); MCS.i=0; MCS.score=0; mcShow(); }
+function mcTop(done){
+  const n=MC.length;
+  document.getElementById('mc-count').textContent = MCS.i>=n ? `Готово: ${n} из ${n}` : `${MCS.i+1} из ${n}`;
+  document.getElementById('mc-bar').style.width=((MCS.i+(done?1:0))/n*100)+'%';
+  document.getElementById('mc-score').textContent='верно: '+MCS.score;
+}
+function mcShow(){
+  const card=document.getElementById('mc-card');
+  if(MCS.i>=MC.length){
+    const n=MC.length, s=MCS.score;
+    card.innerHTML=`<p class="qq">Верно ${s} из ${n}</p><p style="margin:0">${s===n?'Без единой ошибки!': s>=12?'Отличный результат.':'Перечитай конспект и попробуй ещё раз.'}</p><button class="btn primary" id="mc-again" style="justify-self:start">Ещё раз</button>`;
+    document.getElementById('mc-again').onclick=()=>{ mcNew(); play('tick'); };
+    play(s>=12?'win':'flip'); mcTop(false); return;
+  }
+  const [q,opts,why]=MC[MCS.order[MCS.i]], ord=shuffle(opts.map((_,i)=>i));
+  card.innerHTML=`<span class="tf-n">Вопрос</span><p class="qq">${esc(q)}</p><div class="opts">${ord.map((k,j)=>`<button class="opt" data-k="${k}"><span class="lt">${'АБВГ'[j]}</span><span>${esc(opts[k])}</span></button>`).join('')}</div><div id="mc-exp"></div>`;
+  card.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+    const k=+b.dataset.k, ok=k===0;
+    card.querySelectorAll('.opt').forEach(x=>{ x.disabled=true; const kk=+x.dataset.k; if(kk===0) x.classList.add('ok'); else if(x===b) x.classList.add('bad'); else x.classList.add('dim'); });
+    if(ok){ MCS.score++; addToSet('st-mc', MCS.order[MCS.i]); play('ok'); } else play('bad');
+    document.getElementById('mc-exp').innerHTML=`<div class="qexp ${ok?'ok':'bad'}"><strong>${ok?'Правильно!':'Не совсем.'}</strong><p>${esc(why)}</p><button class="btn primary" id="mc-next">Дальше →</button></div>`;
+    document.getElementById('mc-next').onclick=()=>{ MCS.i++; mcShow(); play('tick'); };
+    document.getElementById('mc-next').focus({preventScroll:true});
+    mcTop(true);
+  });
+  mcTop(false);
+}
+
+/* ---------- match the pairs ---------- */
+const PR = [
+  ['Параллельные прямые','Лежат в одной плоскости и не пересекаются'],
+  ['Скрещивающиеся прямые','Не лежат в одной плоскости'],
+  ['Пересекающиеся прямые','Имеют ровно одну общую точку'],
+  ['Прямая, параллельная плоскости','Прямая и плоскость, у которых нет общих точек'],
+  ['Прямая, перпендикулярная плоскости','Перпендикулярна любой прямой, лежащей в этой плоскости'],
+  ['Параллельные плоскости','Две плоскости, у которых нет общих точек'],
+  ['Перпендикулярные плоскости','Пересекаются, и угол между ними равен 90°'],
+  ['Наклонная','Отрезок от точки вне плоскости до точки плоскости, не являющийся перпендикуляром'],
+  ['Основание перпендикуляра','Конец перпендикуляра, лежащий в плоскости'],
+  ['Проекция наклонной','Отрезок, соединяющий основания перпендикуляра и наклонной']
+];
+const PRS = { ids:[], done:0, mist:0, sel:null };
+function prNew(){
+  PRS.ids=shuffle(PR.map((_,i)=>i)).slice(0,5); PRS.done=0; PRS.mist=0; PRS.sel=null;
+  const t=document.getElementById('pr-terms'), d=document.getElementById('pr-defs');
+  t.innerHTML=PRS.ids.map(i=>`<button class="pi term" data-i="${i}">${esc(PR[i][0])}</button>`).join('');
+  d.innerHTML=shuffle(PRS.ids).map(i=>`<button class="pi def" data-i="${i}">${esc(PR[i][1])}</button>`).join('');
+  document.querySelectorAll('#tm-pr .pi').forEach(b=>b.onclick=()=>prTap(b));
+  document.getElementById('pr-foot').innerHTML='';
+  prTop();
+}
+function prTop(){
+  document.getElementById('pr-count').textContent=`Пары: ${PRS.done} из 5`;
+  document.getElementById('pr-bar').style.width=(PRS.done/5*100)+'%';
+  document.getElementById('pr-mist').textContent='ошибок: '+PRS.mist;
+}
+function prTap(b){
+  if(b.classList.contains('done')) return;
+  const s=PRS.sel;
+  if(!s || s.classList.contains('term')===b.classList.contains('term')){
+    if(s) s.classList.remove('sel');
+    PRS.sel = s===b ? null : b; if(PRS.sel) b.classList.add('sel'); play('tick'); return;
+  }
+  if(s.dataset.i===b.dataset.i){
+    PRS.done++; [s,b].forEach(x=>{ x.classList.remove('sel'); x.classList.add('done'); x.disabled=true; x.insertAdjacentHTML('afterbegin',`<span class="pn">${PRS.done}</span>`); });
+    addToSet('st-pr', +b.dataset.i); play('ok');
+  } else {
+    PRS.mist++; play('bad');
+    [s,b].forEach(x=>{ x.classList.remove('wrong'); void x.offsetWidth; x.classList.add('wrong'); setTimeout(()=>x.classList.remove('wrong'),450); });
+    s.classList.remove('sel');
+  }
+  PRS.sel=null; prTop();
+  if(PRS.done===5){
+    play('win');
+    document.getElementById('pr-foot').innerHTML=`<div class="qexp ok" style="border:0"><strong>${PRS.mist===0?'Все пары без ошибок!':'Все пары собраны. Ошибок: '+PRS.mist}</strong><button class="btn primary" id="pr-again">Новые пары</button></div>`;
+    document.getElementById('pr-again').onclick=()=>{ prNew(); play('tick'); };
+  }
+}
+
+/* ---------- find the mistake ---------- */
+const ER = [
+  ['Если две точки прямой лежат в плоскости, то [некоторые] точки прямой лежат в этой плоскости.','все','Аксиома: вся прямая лежит в плоскости.'],
+  ['Если две плоскости имеют общую точку, то они имеют общую [плоскость], на которой лежат все их общие точки.','прямую','Две различные плоскости пересекаются по прямой.'],
+  ['Через две [скрещивающиеся] прямые проходит плоскость, и притом только одна.','пересекающиеся','Через скрещивающиеся прямые нельзя провести плоскость.'],
+  ['Параллельные прямые лежат в одной плоскости и [пересекаются].','не пересекаются','Параллельные прямые не имеют общих точек.'],
+  ['Скрещивающиеся прямые — прямые, которые [лежат] в одной плоскости.','не лежат','Именно этим скрещивающиеся прямые отличаются от параллельных.'],
+  ['Прямая и плоскость параллельны, если у них [одна] общая точка.','нет ни одной','Одна общая точка означает, что прямая пересекает плоскость.'],
+  ['Если прямая перпендикулярна двум [параллельным] прямым плоскости, то она перпендикулярна этой плоскости.','пересекающимся','В признаке прямые плоскости должны пересекаться.'],
+  ['Две прямые, перпендикулярные одной плоскости, [пересекаются].','параллельны','Это свойство перпендикулярных прямой и плоскости.'],
+  ['Если плоскость перпендикулярна одной из двух параллельных прямых, то она [параллельна] и другой.','перпендикулярна','Перпендикулярность переносится на параллельную прямую.'],
+  ['Если две параллельные плоскости пересечены третьей, то линии их пересечения [скрещиваются].','параллельны','Линии пересечения лежат в одной плоскости и не имеют общих точек.'],
+  ['Отрезки параллельных прямых, заключённые между параллельными плоскостями, [пропорциональны].','равны','Это свойство параллельных плоскостей.'],
+  ['Прямая в плоскости, проведённая через основание наклонной перпендикулярно её проекции, [параллельна] самой наклонной.','перпендикулярна','Это теорема о трёх перпендикулярах.'],
+  ['Перпендикулярные плоскости — пересекающиеся плоскости, угол между которыми равен [45°].','90°','Перпендикулярность всегда означает угол 90°.'],
+  ['Если одна из двух плоскостей проходит через прямую, [параллельную] другой плоскости, то эти плоскости перпендикулярны.','перпендикулярную','Признак перпендикулярности плоскостей требует прямую, перпендикулярную другой плоскости.']
+];
+const ERS = { order:[], i:0, score:0, tries:0, done:false };
+function erNew(){ ERS.order=shuffle(ER.map((_,i)=>i)); ERS.i=0; ERS.score=0; erShow(); }
+function erTop(){
+  const n=ER.length;
+  document.getElementById('er-count').textContent = ERS.i>=n ? `Готово: ${n} из ${n}` : `${ERS.i+1} из ${n}`;
+  document.getElementById('er-bar').style.width=((ERS.i+(ERS.done?1:0))/n*100)+'%';
+  document.getElementById('er-score').textContent='с первого раза: '+ERS.score;
+}
+function erShow(){
+  const card=document.getElementById('er-card'); ERS.tries=0; ERS.done=false;
+  if(ERS.i>=ER.length){
+    const n=ER.length, s=ERS.score;
+    card.innerHTML=`<p class="qq">С первого раза: ${s} из ${n}</p><p style="margin:0">${s===n?'Ни одна ошибка не ускользнула!': s>=10?'Отличный результат.':'Перечитай конспект и попробуй ещё раз.'}</p><button class="btn primary" id="er-again" style="justify-self:start">Ещё раз</button>`;
+    document.getElementById('er-again').onclick=()=>{ erNew(); play('tick'); };
+    play(s>=10?'win':'flip'); erTop(); return;
+  }
+  const [t]=ER[ERS.order[ERS.i]];
+  const parts=t.split(/(\[[^\]]+\])/).filter(Boolean);
+  let html='';
+  parts.forEach(pt=>{
+    if(pt[0]==='['){ html+=`<button class="tok" data-w="1">${esc(pt.slice(1,-1))}</button>`; return; }
+    pt.split(/(\s+)/).forEach(w=>{ if(!w) return; if(/^\s+$/.test(w)){ html+=' '; return; }
+      const m=w.match(/^(.*?)([.,:;]*)$/); html+=`<button class="tok">${esc(m[1])}</button>${esc(m[2])}`; });
+  });
+  card.innerHTML=`<span class="tf-n">Нажми на слово, из-за которого утверждение неверно</span><p class="errq">${html}</p><div id="er-exp"></div>`;
+  card.querySelectorAll('.tok').forEach(b=>b.onclick=()=>erTap(b));
+  erTop();
+}
+function erTap(b){
+  if(ERS.done) return;
+  const [,fix,why]=ER[ERS.order[ERS.i]], card=document.getElementById('er-card');
+  if(b.dataset.w){ erReveal(true); return; }
+  ERS.tries++; play('bad');
+  b.classList.remove('miss'); void b.offsetWidth; b.classList.add('miss');
+  if(ERS.tries>=2) erReveal(false);
+}
+function erReveal(found){
+  const [,fix,why]=ER[ERS.order[ERS.i]], card=document.getElementById('er-card');
+  ERS.done=true;
+  const w=card.querySelector('.tok[data-w]'); w.classList.add('found'); w.insertAdjacentHTML('afterend',`<span class="fixw">${esc(fix)}</span>`);
+  card.querySelectorAll('.tok').forEach(x=>x.disabled=true);
+  const first=found && ERS.tries===0;
+  if(first){ ERS.score++; addToSet('st-er', ERS.order[ERS.i]); }
+  if(found) play('ok');
+  document.getElementById('er-exp').innerHTML=`<div class="qexp ${found?'ok':'bad'}"><strong>${first?'Нашёл с первого раза!': found?'Нашёл!':'Вот где ошибка.'}</strong><p>${esc(why)}</p><button class="btn primary" id="er-next">Дальше →</button></div>`;
+  document.getElementById('er-next').onclick=()=>{ ERS.i++; erShow(); play('tick'); };
+  document.getElementById('er-next').focus({preventScroll:true});
+  erTop();
+}
 
 /* ---------- boot ---------- */
 renderYarns();
