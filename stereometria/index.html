@@ -173,6 +173,12 @@ main .wrap{padding-block:28px 48px}
 .t-prop{background:var(--lav)} .t-thm{background:var(--ink);color:var(--cream)}
 .fig{margin:0}
 .fig svg{display:block;width:100%;max-width:300px;height:auto;margin-left:auto}
+.anim-host{position:relative;cursor:pointer}
+.replay{position:absolute;right:0;top:0;width:32px;height:32px;border-radius:50%;border:2px solid var(--ink);background:var(--paper);display:grid;place-items:center;cursor:pointer;opacity:.85;padding:0;color:var(--ink)}
+.replay:hover{opacity:1;background:var(--pink)}
+.replay svg{width:18px;height:18px;margin:0}
+.case .anim-host .replay{width:26px;height:26px}
+.case .anim-host .replay svg{width:14px;height:14px}
 .fig figcaption{font-family:var(--hand);font-size:1.15rem;color:var(--ink-soft);text-align:right;line-height:1.1}
 .cases{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:10px}
 .case{border:1.5px solid var(--ink);border-radius:8px;padding:10px;background:var(--cream)}
@@ -845,7 +851,7 @@ const FIG = {
   lp_in: sv(plane()+L(45,95,215,64)+dot(95,86,'A',-4,18)+dot(165,73,'B',-4,18)),
   lp_cross: sv(plane('20,120 75,60 240,60 185,120')+L(118,4,130,88)+L(130,88,134,116,'ds')+L(134,116,138,138)+dot(130,88,'M',8,4)+T(105,22,'a','lbo'),'0 0 260 140'),
   lp_par: sv(plane('20,125 75,65 240,65 185,125')+L(40,28,220,28)+T(224,34,'a','lbo')+T(150,116,'α','lbg')),
-  threeperp: sv(plane('15,125 70,60 250,60 195,125')+L(80,100,175,100,'ac')+L(205,64,157,121)+L(80,15,80,100)+L(80,15,175,100)+`<polyline class="ln thin" points="80,90 90,90 90,100"/><polyline class="ln thin" points="166,100 171.8,93.1 180.8,93.1"/>`+dot(80,15,'A',-20,6)+dot(80,100,'H',-22,12)+dot(175,100,'M',9,14)+T(212,78,'a','lbo')+T(112,82,'α','lbg'),'0 0 260 140'),
+  threeperp: sv(plane('15,125 70,60 250,60 195,125')+L(80,15,80,100)+L(80,15,175,100)+L(80,100,175,100,'ac')+L(205,64,157,121)+`<polyline class="ln thin" points="80,90 90,90 90,100"/><polyline class="ln thin" points="166,100 171.8,93.1 180.8,93.1"/>`+dot(80,15,'A',-20,6)+dot(80,100,'H',-22,12)+dot(175,100,'M',9,14)+T(212,78,'a','lbo')+T(112,82,'α','lbg'),'0 0 260 140'),
   parplanes: sv(plane('20,128 70,96 240,96 190,128')+plane('20,58 70,26 240,26 190,58','pl2')+T(160,122,'α','lbg')+T(160,52,'β','lbg'),'0 0 260 140'),
   perpplanes: sv(plane('20,122 70,86 240,86 190,122')+`<polygon class="pl2" points="60,104 200,104 200,14 60,14"/>`+L(40,104,215,104,'ac')+`<line class="ln thin" x1="130" y1="104" x2="130" y2="44"/><line class="ln thin" x1="130" y1="104" x2="105" y2="122"/><polyline class="ln thin" points="130,95 123,100 123,109"/><circle class="pt" cx="130" cy="104" r="3"/>`+T(165,118,'α','lbg')+T(210,34,'β','lbg'),'0 0 260 140'),
   p1: sv(plane('15,125 70,65 250,65 195,125')+L(95,15,95,105)+L(95,15,195,92)+L(95,105,195,92,'ac')+`<polyline class="ln thin" points="95,95 105,93.7 105,103.7"/>`+dot(95,15,'A',-20,6)+dot(95,105,'H',-22,12)+dot(195,92,'M',8,-4)+T(76,64,'6','lbo')+T(150,46,'10','lbo')+T(40,116,'α','lbg'),'0 0 260 140'),
@@ -857,6 +863,53 @@ const FIG = {
   p7: sv(L(40,130,150,130)+L(150,130,200,95)+L(40,60,150,60)+L(150,60,200,25)+L(40,60,90,25)+L(90,25,200,25)+L(40,60,40,130)+L(150,60,150,130)+L(200,25,200,95)+L(40,130,90,95,'ds thin')+L(90,95,200,95,'ds thin')+L(90,25,90,95,'ds thin')+L(90,25,200,95,'ac ds')+`<polyline class="ln thin" points="192,95 190,90 195.5,86"/>`+dot(40,130,'A',-18,8)+dot(150,130,'B',2,18)+dot(200,95,'C',8,10)+dot(90,95,'D',-20,16)+dot(40,60,'A₁',-30,2)+dot(150,60,'B₁',2,18)+dot(200,25,'C₁',8,0)+dot(90,25,'D₁',-12,-8)+T(74,62,'8','lbo')+T(140,110,'6','lbo'),'0 0 260 150'),
   p8: sv(plane('20,128 75,88 240,88 185,128')+`<polygon class="pl2" points="50,108 212,108 212,14 50,14"/>`+L(36,108,226,108)+L(80,108,62,121)+L(170,108,170,64)+L(62,121,170,64,'ac')+L(62,121,170,108,'thin ds')+`<polyline class="ln thin" points="73,108 69,111 76,111"/><polyline class="ln thin" points="170,100 178,100 178,108"/>`+dot(62,121,'A',-20,8)+dot(80,108,'C',2,-8)+dot(170,108,'D',6,18)+dot(170,64,'B',8,0)+T(52,112,'3','lbo')+T(176,88,'4','lbo')+T(116,102,'12','lbo')+T(230,104,'c','lbo')+T(140,124,'α','lbg')+T(190,32,'β','lbg'),'0 0 260 140')
 };
+/* ---------- animated figures: plane appears, points pop, lines are drawn through them ---------- */
+const ANIM = new WeakMap();
+function animateFig(svg){
+  if(!svg || reduceMotion || !svg.animate) return;
+  const prev=ANIM.get(svg); if(prev) prev.stop();
+  const polys=[...svg.querySelectorAll('polygon')], dots=[...svg.querySelectorAll('circle.pt')], texts=[...svg.querySelectorAll('text')];
+  const lines=[...svg.querySelectorAll('line.ln')], marks=[...svg.querySelectorAll('polyline.ln')];
+  const anims=[]; let t=0;
+  polys.forEach((el,i)=>{ el.style.transformBox='fill-box'; el.style.transformOrigin='50% 50%';
+    anims.push(el.animate([{opacity:0,transform:'scale(.9)'},{opacity:1,transform:'none'}],{duration:450,delay:i*180,easing:'cubic-bezier(.3,.7,.3,1.2)',fill:'backwards'})); });
+  t = polys.length ? 300+polys.length*180 : 0;
+  dots.forEach((el,i)=>{ el.style.transformBox='fill-box'; el.style.transformOrigin='50% 50%';
+    anims.push(el.animate([{transform:'scale(0)'},{transform:'scale(1.8)',offset:.6},{transform:'scale(1)'}],{duration:380,delay:t+i*160,fill:'backwards'})); });
+  texts.forEach(el=>anims.push(el.animate([{opacity:0},{opacity:1}],{duration:400,delay:t+150,fill:'backwards'})));
+  t += dots.length*160 + 250;
+  // lines grow from their first end, one after another
+  const plan = lines.map(el=>{
+    const x1=+el.getAttribute('x1'), y1=+el.getAttribute('y1'), x2=+el.getAttribute('x2'), y2=+el.getAttribute('y2');
+    const dur = Math.max(380, Math.hypot(x2-x1,y2-y1)*4.2), st=t; t += dur*.85;
+    el.setAttribute('x2',x1); el.setAttribute('y2',y1); el.style.opacity='0';
+    return {el,x1,y1,x2,y2,st,dur};
+  });
+  marks.forEach((el,i)=>anims.push(el.animate([{opacity:0},{opacity:1}],{duration:300,delay:t+i*120,fill:'backwards'})));
+  let raf=0; const t0=performance.now();
+  const ease=k=>1-Math.pow(1-k,3);
+  function step(now){
+    const e=now-t0; let busy=false;
+    plan.forEach(p=>{ const k=Math.max(0,Math.min(1,(e-p.st)/p.dur)), q=ease(k); if(k<1) busy=true;
+      p.el.style.opacity = k>0 ? '' : '0'; p.el.setAttribute('x2',(p.x1+(p.x2-p.x1)*q).toFixed(2)); p.el.setAttribute('y2',(p.y1+(p.y2-p.y1)*q).toFixed(2)); });
+    if(busy) raf=requestAnimationFrame(step); else ANIM.delete(svg);
+  }
+  raf=requestAnimationFrame(step);
+  ANIM.set(svg,{ stop(){ cancelAnimationFrame(raf); anims.forEach(a=>a.cancel()); plan.forEach(p=>{ p.el.style.opacity=''; p.el.setAttribute('x2',p.x2); p.el.setAttribute('y2',p.y2); }); ANIM.delete(svg); } });
+}
+const REPLAY_ICON='<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M15.5 6.5 A7 7 0 1 0 17 11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M16.5 2.5 L16 7 L11.5 6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function makeAnimHost(host){
+  if(host.classList.contains('anim-host')) return;
+  host.classList.add('anim-host');
+  const b=document.createElement('button'); b.className='replay'; b.type='button'; b.setAttribute('aria-label','Показать построение ещё раз'); b.innerHTML=REPLAY_ICON;
+  host.appendChild(b);
+  host.addEventListener('click', ()=>animateFig(host.querySelector('svg')));
+}
+const figIO = ('IntersectionObserver' in window) ? new IntersectionObserver(es=>es.forEach(en=>{
+  if(en.isIntersecting && !en.target.dataset.played){ en.target.dataset.played='1'; animateFig(en.target.querySelector('svg')); }
+}),{threshold:.6}) : null;
+document.querySelectorAll('#view-konspekt [data-fig]').forEach(el=>{ makeAnimHost(el); if(figIO) figIO.observe(el); });
+
 document.querySelectorAll('[data-fig]').forEach(el=>{
   const s = FIG[el.dataset.fig]; if(!s) return;
   el.insertAdjacentHTML('afterbegin', s);
@@ -1464,6 +1517,7 @@ function renderTask(){
       </div>
     </div></article>`;
   renderSteps();
+  const tf=taskEl.querySelector('.fig'); if(tf){ makeAnimHost(tf); if(!document.getElementById('view-zadachi').hidden) animateFig(tf.querySelector('svg')); }
   const inp = document.getElementById('ans-in');
   const check = ()=>{
     const v = parseFloat(inp.value.replace(',','.').replace(/[^\d.\-]/g,''));
